@@ -1,0 +1,380 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1,minimum-scale=1,maximum-scale=1,user-scalable=no" />
+    <title></title>
+    <link href="css/mui.min.css" rel="stylesheet" />
+    <style type="text/css">
+        td {
+            text-align: center;
+        }
+        
+        .time {
+            font-size: 12px;
+        }
+        
+        tr {
+            border-bottom: thin solid #555555;
+        }
+        
+        th {
+            padding: 10px 0;
+        }
+        
+        #table-head {
+            background-color: #fff;
+            z-index: 2;
+            position: fixed;
+        }
+        /*#table-body {
+			padding-top: 120px;
+		}*/
+        
+        #historytable {
+            overflow: auto;
+            /*margin-top: 120px;*/
+        }
+        
+        th {
+            width: 1000px;
+        }
+    </style>
+</head>
+
+
+<body>
+    <header class="mui-bar mui-bar-nav">
+        <a class="mui-action-back mui-icon mui-icon-left-nav mui-pull-left public-color"></a>
+        <h1 class="mui-title">设备历史数据</h1>
+        <span class="mui-icon mui-icon-reload mui-pull-right public-color" id="refresh"></span>
+    </header>
+    <div id="refreshContainer" class="mui-content mui-scroll-wrapper">
+        <div>
+            <table class="mui-table-view mui-table">
+                <thead id="table-head"></thead>
+            </table>
+        </div>
+        <div class="mui-scroll" id="historytable">
+            <table class="mui-table-view mui-table">
+                <tbody id="table-body"></tbody>
+            </table>
+        </div>
+    </div>
+    <!--<div id="refreshContainer" class="mui-content mui-scroll-wrapper">
+		<div class="mui-scroll" id="historytable">
+			<table class="mui-table-view mui-table">
+			    <thead id="table-head"></thead>
+			    <tbody id="table-body"></tbody>
+	  		</table>
+	  	</div>
+	</div>-->
+
+    <script src="js/mui.min.js"></script>
+    <script src="js/mqttws31.min.js"></script>
+    <script src="js/jquery-2.0.3.min.js"></script>
+    <script type="text/javascript" charset="utf-8">
+        var client; //MQTT连接客户
+        var protocolVersionDb; //数据库协议版本
+        var protocolVersionDev; //设备协议版本
+        var dataHistory; //历史数据
+        var sendTime = 0;
+        var historyHead = [];
+        var historyData = [];
+        var dataUnit = [];
+        Date.prototype.Format = function(fmt) {
+            var o = {
+                "M+": this.getMonth() + 1, //月份 
+                "d+": this.getDate(), //日 
+                "h+": this.getHours(), //小时 
+                "m+": this.getMinutes(), //分 
+                "s+": this.getSeconds(), //秒 
+                "q+": Math.floor((this.getMonth() + 3) / 3), //季度 
+                "S": this.getMilliseconds() //毫秒 
+            };
+            if (/(y+)/.test(fmt)) fmt = fmt.replace(RegExp.$1, (this.getFullYear() + "").substr(4 - RegExp.$1.length));
+            for (var k in o)
+                if (new RegExp("(" + k + ")").test(fmt)) fmt = fmt.replace(RegExp.$1, (RegExp.$1.length == 1) ? (o[k]) : (("00" + o[k]).substr(("" + o[k]).length)));
+            return fmt;
+        }
+        var url = "http://120.78.176.175:8081";
+
+        //		mui('.mui-scroll-wrapper').scroll({deceleration: 0.0005 });
+        //		document.querySelector('#refreshContainer').addEventListener('scroll', function(e) {
+        //			var historytable = document.querySelector('#historytable');
+        //			var scrollTopStr = historytable.style.transform;
+        //			var scrollTop = 0 - scrollTopStr.split("px")[1].substr(2);
+        //			console.log(scrollTop);
+        //			historytable.querySelector('thead').style.transform = 'translateY(' + scrollTop + 'px)';
+        //		});
+
+        //		var scrollTable = mui('#historytable').scroll();
+        //	    document.querySelector('#historytable' ).addEventListener('scroll', function (e) {
+        //	      console.log(scrollTable.y);
+        //	    })
+
+        mui.init({
+            pullRefresh: {
+                container: "#refreshContainer", //下拉刷新容器标识，querySelector能定位的css选择器均可，比如：id、.class等
+                down: {
+                    style: 'circle', //必选，下拉刷新样式，目前支持原生5+ ‘circle’ 样式
+                    color: '#2BD009', //可选，默认“#2BD009” 下拉刷新控件颜色
+                    height: '50px', //可选,默认50px.下拉刷新控件的高度,
+                    range: '100px', //可选 默认100px,控件可下拉拖拽的范围
+                    offset: '0px', //可选 默认0px,下拉刷新控件的起始位置
+                    auto: true, //可选,默认false.首次加载自动上拉刷新一次
+                    contentrefresh: "正在加载...",
+                    callback: noMove //必选，刷新函数，根据具体业务来编写，比如通过ajax从服务器获取新数据；
+                },
+                up: {
+                    height: 50, //可选.默认50.触发上拉加载拖动距离
+                    auto: true, //可选,默认false.自动上拉加载一次
+                    contentrefresh: "正在加载...", //可选，正在加载状态时，上拉加载控件上显示的标题内容
+                    contentnomore: "没有更多数据了", //可选，请求完毕若没有更多数据时显示的提醒内容；
+                    callback: noMove //必选，刷新函数，根据具体业务来编写，比如通过ajax从服务器获取新数据；
+                }
+            }
+        });
+        var userName = localStorage.getItem("userName");
+        var devSNCode = localStorage.getItem("snCode");
+        getHistory();
+        //    	getprotocolVersionDb(devSNCode);
+
+        //拿到数据库里的协议版本
+        //		function getprotocolVersionDb(devSNCode){
+        //		    $.ajax({
+        //		        url: url + "/app/getProtocolVersion",
+        //		        cache: false,
+        //		        dataType:'json',
+        //		        data : {
+        //		            snCode: devSNCode
+        //		        },
+        //		        type : 'POST',
+        //		        beforeSend: function () {
+        //		
+        //		        },
+        //		        success: function(result){
+        //		            if(result.code == 0){
+        //                      mui.toast(result.msg);
+        //		                protocolVersionDb = result.data;
+        //		                getprotocolFlag = true;
+        //		                initMqtt();
+        //		                console.log(protocolVersionDb);
+        //		            }
+        //		            else {
+        //                      mui.toast(result.msg);
+        //		                closeData();
+        //		            }
+        //		        },
+        //		        complete: function () {
+        //		
+        //		        },
+        //		        error: function (data) {
+        //		            console.log(data);
+        //		            console.info("error: " + data.responseText);
+        //		            closeData();
+        //		        }
+        //		    });
+        //		}
+        //		
+        //		//新建MQTT连接，并发去第一次message
+        //		function initMqtt() {
+        //		    // Create a client instance
+        ////		    client = new Paho.MQTT.Client('47.93.11.243', 61623, "yiwei");
+        //		    client = new Paho.MQTT.Client('118.31.17.203', 9001, "yiwei");
+        //		
+        //		    // set callback handlers
+        //		    client.onConnectionLost = onConnectionLost;
+        //		    client.onMessageArrived = onMessageArrived;
+        //		
+        //		    // connect the client
+        ////		    client.connect({ userName:'admin', password:'password', onSuccess: onConnect });
+        //		    client.connect({ onSuccess: onConnect });
+        //		}
+        //
+        //		function onConnect() {
+        //		    // Once a connection has been made, make a subscription and send a message.
+        //		    console.log("onConnect");
+        //		    // client.subscribe("/China/HuBei/#");
+        //		    // c_sub_topic = "/China/HuBei/"+devSNCode+"/#";
+        //		    c_sub_topic = "/"+devSNCode+"/#";
+        //		    client.subscribe(c_sub_topic);
+        //		    message_payloadString = "1";
+        //		    message = new Paho.MQTT.Message(message_payloadString);
+        //		    // devSNCodeTest = "HMITest001";       //测试用
+        //		    // message_destinationName = "/China/HuBei/" + devSNCode + "/DevRecv/cfg/req"
+        //		    message_destinationName = "/" + devSNCode + "/DevRecv/cfg/req";
+        //		    message.destinationName = message_destinationName;
+        //		    client.send(message);
+        //		}
+        //		
+        //		// called when the client loses its connection
+        //		function onConnectionLost(responseObject) {
+        //		    if (responseObject.errorCode !== 0) {
+        //		        console.log("onConnectionLost:" + responseObject.errorMessage);
+        //		    }
+        //		}
+        //		
+        //		// called when a message arrives
+        //		function onMessageArrived(message) {
+        //		    console.log(message.destinationName);
+        //		    console.log(message.payloadString);
+        //		    switch(message.destinationName){
+        //		        case "/"+devSNCode + "/DevSend/runtime/on":
+        //		            if(sendTime == 0){
+        //		                analProtocol(message.payloadString);
+        //		                sendTime++;
+        //		            }
+        //		            break;
+        //		    }
+        //		}
+        //		
+        //		//分析设备发过来的数据
+        //		function analProtocol(payload){
+        //		    let payloadData = new Array();
+        //		    payloadData = payload.split("_");
+        //		    protocolVersionDev = payloadData[0];
+        //		    payloadData.shift();
+        //		    payloadData.pop();
+        //		    devData = payloadData;
+        //		    if (protocolVersionDev == protocolVersionDb){
+        //		    	protocolVersionFlag = true;
+        //		    	getHistory();
+        //		    } 
+        //		    else{
+        //		        protocolVersionFlag = false;
+        //		        return mui.toast("协议不同步，请在web页面同步协议");
+        //		    }
+        //		}
+
+
+
+        function getHistory() {
+            $.ajax({
+                url: url + "/app/getData",
+                cache: false,
+                dataType: 'json',
+                data: {
+                    snCode: devSNCode
+                },
+                type: 'POST',
+                beforeSend: function() {
+
+                },
+                success: function(result) {
+                    if (result.code == 0) {
+                        //                      mui.toast(result.msg);
+                        dataHistory = [];
+                        dataHistory = result.data;
+                        analysisData();
+                    } else {
+                        mui.toast(result.msg);
+                    }
+                },
+                complete: function() {
+
+                },
+                error: function(data) {
+                    console.log(data);
+                    console.info("error: " + data.responseText);
+                }
+            });
+        }
+
+        function analysisData() {
+            historyHead = [];
+            var HeadData = dataHistory[0].deviceData.split("_");
+            HeadData.shift();
+            HeadData.shift();
+            for (var i = 0; i < HeadData.length; i += 2) {
+                historyHead.push(HeadData[i]);
+            }
+            //			console.log(historyHead);
+            for (var i = 0; i < dataHistory.length; i++) {
+                var tempJSON = {};
+                tempJSON.dataTime = dataHistory[i].dataTime;
+                tempJSON.data = [];
+                var temp = dataHistory[i].deviceData.split("_");
+                temp.shift();
+                temp.shift();
+                for (var j = 1; j < temp.length; j += 2) {
+                    tempJSON.data.push(temp[j]);
+                }
+                historyData.push(tempJSON);
+            }
+            //			console.log(historyData);
+            getUnit();
+        }
+        
+        function getUnit(){
+        	$.ajax({
+                url: url + "/app/get/dataUnit",
+                cache: false,
+                dataType: 'json',
+                data: {
+                    snCode: devSNCode
+                },
+                type: 'POST',
+                beforeSend: function() {
+
+                },
+                success: function(result) {
+                    if (result.code == 0) {
+                        //                      mui.toast(result.msg);
+                        dataUnit = [];
+                        dataUnit = result.data.split("_");
+                        displayData();
+                    } else {
+                        mui.toast(result.msg);
+                    }
+                },
+                complete: function() {
+
+                },
+                error: function(data) {
+                    console.log(data);
+                    console.info("error: " + data.responseText);
+                }
+            });
+        }
+
+        function displayData() {
+            var headstr = "<tr><th>时间</th>";
+            for (var i in historyHead) {
+                headstr += "<th>" + historyHead[i] + "<p>(" + dataUnit[i] +  ") </p></th>";
+            }
+            headstr += "</tr>";
+            $("#table-head").empty().append(headstr);
+            var datastr = "";
+            for (var i in historyData) {
+                datastr += "<tr><td class='time'>" + historyData[i].dataTime + "</td>";
+                for (var j = 0; j < historyData[i].data.length; j++) {
+                    datastr += "<td>" + historyData[i].data[j] + "</td>";
+                }
+                datastr += "</tr>";
+            }
+            $("#table-body").empty().append(datastr);
+
+            //			var thHeight = $("#table-head").height();
+            //			$("#historytable").css("margin-top",thHeight);
+        }
+
+
+        //		mui("body").on("tap","#historytable",function(e){
+        //      	var historytable = document.getElementById('historytable');
+        //			var scrollTopStr = historytable.style.transform;
+        //			var scrollTop = 0 - scrollTopStr.split("px")[1].substr(2);
+        //			console.log(scrollTop);
+        ////			historytable.querySelector('thead').style.transform = 'translateY(' + scrollTop + 'px)';
+        //  	});
+
+        function noMove() {}
+
+        mui("body").on("tap", "#refresh", function() {
+            getHistory();
+        });
+    </script>
+</body>
+
+</html>

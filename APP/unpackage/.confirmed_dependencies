@@ -1,0 +1,71 @@
+{
+  "index.html": {
+    "refer": [
+      "reg.html",
+      "deviceList.html"
+    ],
+    "resources": [
+      "images/logo.png",
+      "js/mui.min.js",
+      "fonts/mui.ttf",
+      "js/jquery-2.0.3.min.js",
+      "css/mui.min.css",
+      "css/login001.css",
+      "js/jQuery.md5.js",
+      "deviceList.html"
+    ]
+  },
+  "reg.html": {
+    "refer": [
+      "index.html"
+    ],
+    "resources": []
+  },
+  "deviceList.html": {
+    "refer": [
+      "index.html",
+      "deviceRealtimeData.html",
+      "deviceRW.html",
+      "deviceAlarm.html",
+      "deviceHistory.html"
+    ],
+    "resources": [
+      "fonts/mui-icons-extra.ttf",
+      "css/mui.min.css",
+      "css/icons-extra.css",
+      "index.html",
+      "deviceHistory.html"
+    ]
+  },
+  "deviceRealtimeData.html": {
+    "refer": [
+      "deviceList.html"
+    ],
+    "resources": []
+  },
+  "deviceRW.html": {
+    "refer": [
+      "deviceList.html"
+    ],
+    "resources": []
+  },
+  "deviceAlarm.html": {
+    "refer": [
+      "deviceList.html"
+    ],
+    "resources": [
+      "css/mui.min.css",
+      "js/mqttws31.min.js"
+    ]
+  },
+  "deviceHistory.html": {
+    "refer": [
+      "deviceList.html"
+    ],
+    "resources": [
+      "css/mui.min.css",
+      "js/mqttws31.min.js",
+      "deviceList.html"
+    ]
+  }
+}

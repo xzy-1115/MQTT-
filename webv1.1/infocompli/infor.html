@@ -1,0 +1,443 @@
+<!DOCTYPE>
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<title>修改客户信息</title>
+<link rel="stylesheet" type="text/css" href="../css/common.css">
+<link rel="stylesheet" type="text/css" href="../css/2ndmodifyInfo.css">
+	
+	<script type="text/javascript" src="../JS/jquery1-1.7.2.min.js" ></script>
+	<script type="text/javascript" src="../JS/jquery.json-2.3.min.js"></script>
+</head>
+ <?php 
+	session_start(); 
+	if($_SESSION['UserName'])
+	$tempstr=1;
+	//$tempstr=0;
+	else $tempstr=0;
+?>
+<body>
+	<div class="center public-width" id="container">
+		<div id="left">
+			<div id="logo">
+				<img src="../img/common/logo_黑底.png"/>
+			</div>
+			<div id="menu-box">
+				<ul id="menu">
+					<!--管理员菜单-->
+					<?php
+						session_start();
+						include_once ("../connect.php");
+						$result = mysql_query("SELECT * FROM use_login WHERE UserName ='".$_SESSION['UserName']."'  ");
+						$row = mysql_fetch_array($result, MYSQL_ASSOC);
+						$count = $row['Role'];
+						if($count==1){
+					?>
+					<li><a id="userMap" href="../UserMap/user_map.html">客户地图</a></li>
+					<li><a class="devMap" href="../DevMap_admin/devMap_admin.html">设备地图</a></li>
+					<li><a class="search" href="../searchInfo/searchInfo.html">信息搜索</a></li>
+					<li><a id="saleRank" href="../rank/rank.html">销售排名</a></li>
+					<li><a class="userLogs" href="../logmanage/infor.html">客户日志</a></li>
+					<li><a class="modifyInfo" href="../infocompli/changeAdminInfor.html">修改管理员信息</a></li>
+					<li><a class="appDownLoad" href="../QRcode/appDownLoad.html">移动APP下载</a></li>
+					<!--
+                    	作者：1763257419@qq.com
+                    	时间：2018-03-30
+                    	描述：二级客户菜单
+                    -->
+                	<?php
+				   		 }else if($count==2){
+				    ?>
+                    <li><a id="addUser" href="../UserManage/UserManage.html">添加客户</a></li>
+                    <li><a id="addDev" href="../Adddevice/index.html">添加设备</a></li>
+                    <li><a class="devMap" href="../DevMap/dev_map.html">设备地图</a></li>
+                    <li><a class="devList" href="../devlist/index_devlist.html">设备列表</a></li>
+                    <li><a class="modifyInfo" href="../infocompli/infor.html">修改客户信息</a></li>
+                    <li><a class="userLogs" href="../logmanage/infor.html">客户日志</a></li>
+                    <li><a class="appDownLoad" href="../QRcode/appDownLoad.html">移动APP下载</a></li>
+                    <li><a class="QA" href="../QA/news.html">客户问题跟踪</a></li>
+                    <li><a class="feedback" href="../OA/index.html">客户信息反馈</a></li>
+                    <!--
+                    	作者：1763257419@qq.com
+                    	时间：2018-03-30
+                    	描述：三级客户菜单
+                    -->
+                	<?php
+					    }else if($count==3){
+					?>
+					<li><a class="devMap" href="../DevMap/dev_map.html">设备地图</a></li>
+                    <li><a class="devList" href="../devlist/index_devlist.html">设备列表</a></li>
+                    <li><a class="modifyInfo" href="../infocompli/infor.html">修改客户信息</a></li>
+                    <li><a class="userLogs" href="../logmanage/infor.html">客户日志</a></li>
+                    <li><a class="appDownLoad" href="../QRcode/appDownLoad.html">移动APP下载</a></li>
+					<li><a class="QA" href="../QA/news.html">客户问题跟踪</a></li>
+                    <li><a class="devInfoFeedBack" href="../devInfoFeedBack/devInfoFeedBack.html">设备信息反馈</a></li>
+                    <?php
+				    	}
+				    ?>
+				</ul>
+			</div>
+		</div>
+		<div id="right">
+			<div id="title">
+				<div id="list-icon">
+					<a href="../main.html"><img src="../img/common/list-title.png"/></a>
+				</div>
+				<h1>亿维自动化物联网云平台</h1>
+				<div id="userinfo-box">
+					<div id="head-icon">
+						<a href="../main.html"><img src="../img/common/驯鹿.png"/></a>
+					</div>
+					<div id="user-info">
+						<li class="list" id="user-name">
+							<?php echo $_SESSION['UserName'];?>
+							<ul>
+								<li class="list"><a id="out" href="../exit.php">退出登录</a></li>
+							</ul>
+						</li>
+					</div>
+				</div>
+			</div>
+			<div id="main-box">
+					<div id="modify-title">
+						<p>修改客户信息</p>
+					</div>
+					<div id="modify-body">
+						<div id="left-box">
+							<div id="head-pic">
+								<img src="../img/common/驯鹿.png"/>
+							</div>
+							<div id="input-box1">
+								<div class="input-info">
+									<p>真实姓名</p>&nbsp&nbsp<input type="text" id="iUSERNAME" value="" placeholder="&nbsp&nbsp真实姓名"/>
+								</div>
+								
+								<div class="input-info">
+									<p>原始密码</p>&nbsp&nbsp<input type="password" id="OLDPASSWD" value="" placeholder="&nbsp&nbsp密码6-12位字母数字组合" onblur="checkOldPwd()" /><span id="oldPwdSpan">原始密码</span>
+								</div>
+								<div class="input-info">
+									<p>新密码</p>&nbsp&nbsp<input type="password" id="NEWPASSWD" value="" placeholder="&nbsp&nbsp密码6-12位字母数字组合" onblur="checkNewPwdOn()"/><span id="newPwdSpan">6-12位字母数字组合</span>
+								</div>
+								<div class="input-info">
+									<p>确认新密码</p>&nbsp&nbsp<input type="password" id="NEWPASSWD_VERIFY" value="" placeholder="&nbsp&nbsp确认新密码" onblur="checkPwdConsistency()" /><span id="pwdVerifySpan">确认新密码</span>
+								</div>
+							</div>
+						</div>
+						<div id="right-box">
+							<div id="input-box2">
+								<div class="input-info">
+									<p>手机号码</p>&nbsp&nbsp<input type="text" id="PHONENUM" value="" placeholder="&nbsp&nbsp请输入11位手机号" onblur="checkMobileOn()" /><span id="phoneSpan">请输入11位手机号</span>
+								</div>
+								<div class="input-info">
+									<p>邮箱</p>&nbsp&nbsp<input type="text" id="EMAIL" value="" placeholder="&nbsp&nbsp请输入邮箱号" onblur="checkEmailOn()" /><span id="emailSpan">请输入邮箱号</span>
+								</div>
+								<div class="input-info">
+									<p>详细地址</p>&nbsp&nbsp<input type="text" id="ADDRESS" value="" placeholder="&nbsp&nbsp详细地址"/>
+								</div>
+								<div class="input-info">
+									<p>公司名称</p>&nbsp&nbsp<input type="text" id="COMPANY" value="" placeholder="&nbsp&nbsp公司名称"/>
+								</div>
+								<div class="input-info">
+									<!--<input type="text" id="INDUSTYPE" value="" placeholder="行业类型"/>-->
+									<p id="indus-type">行业类型</p>&nbsp
+									<select name="行业类型" id="iINDUSTRYTYPE">
+										<option value="0">&nbsp&nbsp智能车库</option>
+										<option value="1">&nbsp&nbsp温控系统</option>
+										<option value="2">&nbsp&nbsp农业大棚</option>
+										<option value="3">&nbsp&nbsp暖通行业</option>
+										<option value="4">&nbsp&nbsp塑胶机械</option>
+										<option value="5">&nbsp&nbsp纺织机械</option>
+										<option value="6">&nbsp&nbsp矿山机械</option>
+										<option value="7">&nbsp&nbsp冶金行业</option>
+										<option value="8">&nbsp&nbsp电力行业</option>
+										<option value="9">&nbsp&nbsp石化行业</option>
+										<option value="10">&nbsp&nbsp建材行业</option>
+										<option value="11">&nbsp&nbsp汽车制造</option>
+										<option value="12">&nbsp&nbsp包装机械</option>
+										<option value="13">&nbsp&nbsp电子设备</option>
+										<option value="14">&nbsp&nbsp水处理</option>
+										<option value="15">&nbsp&nbsp仿真设备</option>
+										<option value="16">&nbsp&nbsp养殖行业</option>
+										<option value="17">&nbsp&nbsp冷库行业</option>
+										<option value="18">&nbsp&nbsp消防设备</option>
+										<option value="19">&nbsp&nbsp环保行业</option>
+										<option value="20">&nbsp&nbsp医药行业</option>
+										<option value="21">&nbsp&nbsp轨道交通行业</option>
+										<option value="22">&nbsp&nbsp核电行业</option>
+									</select>
+									
+								</div>
+								<div class="input-info">
+									<p>短信验证码</p>&nbsp&nbsp<input type="text" id="MESSVF" value="" placeholder="&nbsp短信验证码"/>
+									<input type="button" id="btn" value="获取验证码" onclick="settime(this)" />
+								</div>
+								<div class="input-info" id="submit">
+									<input type="button" value="修改信息" id="add_btn" name="">
+								</div>
+							</div>
+						</div>	
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+</body>
+</html>
+<script type="text/javascript">
+ var teststr=<?php echo $tempstr;?>;
+if(teststr==0)
+{
+window.location.href="../index.html";
+}
+// 退出登录下拉效果
+$(function(){
+	$('.list').hover(function(){
+		$(this).children('ul').stop().slideDown('fast');
+	},function(){
+		$(this).children('ul').stop().slideUp('fast');
+	});
+});
+	
+
+//定义内容是否符合要求标志
+var oldPwdFlag=false;
+var newPwdFlag=false;
+var newPwdVerifyFlag=false;
+var emailFlag=false;
+var phoNumFlag=false;
+//1.检查原始密码是否正确
+function checkOldPwd(){
+	var oldPwdCheck=document.getElementById("OLDPASSWD").value;
+	// alert(oldPwdCheck);
+    var msg ="<img src='../img/reg/对勾.png' style='width:12px'>";
+	$.ajax({
+		 		url: "checkOldPwd.php",
+ 	            type: "POST",
+ 				dataType:"json",
+ 				data:{
+ 					"OLDPWD":oldPwdCheck
+ 				},
+ 				async:false,
+ 				success:function(data){
+ 					// alert(data.state);
+ 					if (data.state==200) {
+ 						msg="<img src='../img/reg/对勾.png' style='width:12px'>"; 
+ 						oldPwdFlag=true;
+ 					} else{
+ 						 msg ="<font color='red'>原始密码输入错误</font>";  
+ 						 oldPwdFlag=false;
+ 					}
+ 				},
+ 				error: function(XMLHttpRequest, textStatus, errorThrown) {
+//这个error函数调试时非常有用，如果解析不正确，将会弹出错误框
+　　　　 			alert(XMLHttpRequest.responseText); 
+					alert(XMLHttpRequest.status);
+					alert(XMLHttpRequest.readyState);
+					alert(textStatus); // parser error;
+				}
+	});
+	var span = document.getElementById("oldPwdSpan");  
+	span.innerHTML = msg;  
+	return msg == "<img src='../img/reg/对勾.png' style='width:12px'>"; 	
+}
+
+//2.检查新密码格式是否符合要求   
+function checkNewPwdOn(){
+	var pwdObj=document.getElementById("NEWPASSWD");  
+    var pwd=trim(pwdObj.value);  
+    var pwdRegex= /^\w{6,12}$/;  //正则表达式
+    var msg ="<img src='../img/reg/对勾.png' style='width:12px'>";  
+    if(!pwd)  
+    {
+    	msg ="<font color='red'>密码不能为空！</font>"; 
+        newPwdFlag=false; 
+    }     
+    else if(!pwdRegex.test(pwd)) 
+    {
+    	msg ="<font color='red'>密码长度不对！</font>";  
+    	newPwdFlag=false;
+    } else{
+    	msg == "<img src='../img/reg/对勾.png' style='width:12px'>";
+    	newPwdFlag=true;
+    }       
+    var span = document.getElementById("newPwdSpan");  
+    span.innerHTML = msg;  
+    return msg == "<img src='../img/reg/对勾.png' style='width:12px'>";
+}
+
+ function trim(s){  
+   return s.replace(/^\s+|\s+$/g,"");  
+} 
+//3.检查新老密码是否相同
+ function checkPwdConsistency(){
+ 	var pwd=document.getElementById("NEWPASSWD").value;
+ 	var pwdVerify=document.getElementById("NEWPASSWD_VERIFY").value;
+ 	var msg="<img src='../img/reg/对勾.png' style='width:12px'>"; 
+ 	if(!pwd)
+	{
+		msg ="<font color='red'>密码不能为空！</font>";
+		newPwdVerifyFlag=false; 
+	} else if(pwd!=pwdVerify)
+	{
+		 msg ="<font color='red'>两次输入的密码不同！</font>"; 
+		 newPwdVerifyFlag=false;
+	} else
+	{
+		msg ="<img src='../img/reg/对勾.png' style='width:12px'>";
+		newPwdVerifyFlag=true;
+	}
+	var span = document.getElementById("pwdVerifySpan");  
+	span.innerHTML = msg;  
+	return msg == "<img src='../img/reg/对勾.png' style='width:12px'>";  
+ }
+ //4.检查电话格式是否符合要求
+ function checkMobileOn() {
+  var phoneNumCheck = /^1\d{10}$/;
+  var phoneNum=document.getElementById("PHONENUM").value;
+  var msg="<img src='../img/reg/对勾.png' style='width:12px'>"; 
+  if (phoneNumCheck.test(phoneNum)) {
+      msg ="<img src='../img/reg/对勾.png' style='width:12px'>";
+      phoNumFlag=true;
+  } else {
+      msg="<font color='red'>手机号码格式错误</font>";
+      phoNumFlag=false;
+  }
+	var span = document.getElementById("phoneSpan");  
+	span.innerHTML = msg;  
+	return msg == "<img src='../img/reg/对勾.png' style='width:12px'>";
+}
+//5.检查邮箱格式是否符合要求
+function checkEmailOn(){
+	var email=document.getElementById("EMAIL").value;
+	var emailCheck=/^(\w-*\.*)+@(\w-?)+(\.\w{2,})+$/;
+	var msg="<img src='../img/reg/对勾.png' style='width:12px'>"; 
+	if(!email)
+	{
+		msg="<font color='red'>邮箱不能为空</font>";
+		emailFlag=false;
+	}else if(!emailCheck.test(email))
+	{
+		msg="<font color='red'>邮箱格式错误</font>";
+		emailFlag=false;	
+	}else
+	{
+		msg ="<img src='../img/reg/对勾.png' style='width:12px'>";
+		emailFlag=true;
+	}
+	var span = document.getElementById("emailSpan");  
+	span.innerHTML = msg;  
+	return msg == "<img src='../img/reg/对勾.png' style='width:12px'>"; 	
+}	
+	
+var verify_code;
+var MESSVFSTR;
+var countdown=60; 
+var USER_NAME;
+var ADDRESS;
+var PHONE_NUM;
+var EMAIL_STR;
+var COMPANY;
+var INDUSTRYTYPE;
+var OLDPASSWDSTR;
+var NEWPASSWDSTR;
+var NEWPASSWD_VERIFYSTR;
+ $("#add_btn").click(function() {
+USER_NAME=document.getElementById('iUSERNAME').value;
+PHONE_NUM=document.getElementById('PHONENUM').value;
+EMAIL_STR=document.getElementById('EMAIL').value;
+OLDPASSWDSTR=document.getElementById('OLDPASSWD').value;
+NEWPASSWDSTR=document.getElementById('NEWPASSWD').value;
+NEWPASSWD_VERIFYSTR=document.getElementById('NEWPASSWD_VERIFY').value;//重新确认密码
+COMPANY=document.getElementById('COMPANY').value;
+INDUSTRYTYPE=document.getElementById('iINDUSTRYTYPE').value;
+MESSVFSTR=document.getElementById('MESSVF').value;
+if(USER_NAME!='' && PHONE_NUM!='' && EMAIL_STR!='' && OLDPASSWDSTR!='' && NEWPASSWDSTR!='' && NEWPASSWD_VERIFYSTR!='' && COMPANY!='' && INDUSTRYTYPE!='' && MESSVFSTR!=''){
+if(NEWPASSWDSTR==NEWPASSWD_VERIFYSTR){
+var re = /^1\d{10}$/
+	if (re.test(PHONE_NUM)) {
+	  var re = /^(\w-*\.*)+@(\w-?)+(\.\w{2,})+$/
+	  if(re.test(EMAIL_STR)){
+$.ajax({
+					type:"POST",
+					url:"infor.php",
+					data: {"USERNAME":USER_NAME,"PHONE_NUM":PHONE_NUM,"EMAIL_STR":EMAIL_STR,"OLDPS":OLDPASSWDSTR,"NEWPS":NEWPASSWDSTR,"NEWPSVF":NEWPASSWD_VERIFYSTR,"COMPANY":COMPANY,"INDUSTRYTYPE":INDUSTRYTYPE,"verify_code":verify_code,"MESSVFSTR":MESSVFSTR},
+					dataType:"json",
+					async:false,
+					success:function(data)
+					{		
+						if (data.state == 200)
+						{  
+							alert("信息已更新");
+							window.location.href="../main.html";
+						}	
+						else if(data.state == 0) alert("信息不完善");
+						else if(data.state == 1) alert("验证码码错误");
+						else if(data.state == 2) alert("错误");
+					    else if(data.state == 3) alert("原密码错误");
+						else if(data.state == 4) alert("新密码两次输入不相同");
+					}
+		});
+			}else alert("请填写正确的邮箱!");
+		}else alert("请填写正确的手机号码!");
+	}else alert("您两次填写的密码不相同!");
+}else alert("您有信息未填写完整!");  
+});
+
+function settime(obj) {
+if(document.getElementById('PHONENUM').value){
+if(countdown==60){
+	$.ajax({ 
+		type:"POST",
+		url:"./sms_demo/api_demo/SmsDemo.php",
+		data: {"phoNum":document.getElementById('PHONENUM').value},
+		dataType:"json",
+		async:false,
+	   success: function (result) { 
+	  verify_code=result.code;
+	   } 
+	  }); 
+}
+    if (countdown == 0) {
+        obj.removeAttribute("disabled");    
+        obj.value="免费获取验证码";
+        countdown = 60;
+        return;
+    } else {
+        obj.setAttribute("disabled", true);
+        obj.value="重新发送(" + countdown + ")";
+        countdown--;
+    }
+setTimeout(function() {
+    settime(obj) }
+    ,1000)
+	}
+	else {
+	alert("信息没有填写完整！");
+	}
+}
+////////////////////////////关页面			
+var clientX = 0;
+var clientY = 0;
+
+window.onmousedown = function (event) {
+      event = event || window.event;
+      clientX = event.clientX;
+      clientY = event.clientY;
+}
+
+window.onbeforeunload = function () {
+if( clientY < 20){
+	$.ajax({
+	type:"POST",
+	url:"../cleansession.php",
+	data: {"clean":"退出登录"},
+	dataType:"json",
+	async:false,
+	success:function(data)
+	{						
+	}
+	});	
+}
+};
+</script>
+

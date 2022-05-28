@@ -1,0 +1,276 @@
+<html>
+<head>
+	<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+	<title>基本配置</title>
+	<link rel="stylesheet" type="text/css" href="../css/common.css">
+	<link rel="stylesheet" type="text/css" href="../css/devCfg.css">
+    <link rel="stylesheet" type="text/css" href="css/style.css" />
+    <link rel="stylesheet" type="text/css" href="css/ui-lightness/jquery-ui-1.8.2.custom.css" />
+    <link rel="stylesheet" type="text/css" href="css/ui.jqgrid.css" />
+    <link rel="stylesheet" type="text/css" href="css/fancybox.css" />
+    <script type="text/javascript" src="http://www.sucaihuo.com/Public/js/other/jquery.js"></script> 
+    <script src="js/i18n/grid.locale-cn.js" type="text/javascript"></script>
+    <script src="js/jquery.jqGrid.min.js" type="text/javascript"></script>
+    <script src="js/jquery.fancybox.js" type="text/javascript"></script>
+    <script src="js/jquery.message.js" type="text/javascript"></script>
+	<script type="text/javascript" src="../JS/jquery.json-2.3.min.js"></script>
+</head>
+
+<?php
+	session_start(); 
+	if($_SESSION['UserName'])
+	$tempstr=1;
+
+	else $tempstr=0;
+	
+		if($_SESSION['SN'])
+	$strSN=$_SESSION['SN'];
+
+	else {
+	$strSN = $_GET['SN'];
+	$_SESSION['SN']=$strSN;
+	}
+?>
+
+<body>  
+	<div class="center public-width" id="container">
+		<div id="left">
+			<div id="logo" style="width: 150px;height: 50px;margin-left: 30px;margin-right: auto;">
+				<img src="../img/common/logo_黑底.png"/>
+			</div>
+			<div id="menu-box">
+				<ul id="menu">
+					<!--管理员菜单-->
+					<?php
+						session_start();
+						include_once ("../connect.php");
+						$result = mysql_query("SELECT * FROM use_login WHERE UserName ='".$_SESSION['UserName']."'  ");
+						$row = mysql_fetch_array($result, MYSQL_ASSOC);
+						$count = $row['Role'];
+						if($count==1){
+					?>
+					<li><a id="userMap" href="../UserMap/user_map.html">客户地图</a></li>
+					<li><a class="devMap" href="../DevMap_admin/devMap_admin.html">设备地图</a></li>
+					<li><a class="search" href="../searchInfo/searchInfo.html">信息搜索</a></li>
+					<li><a id="saleRank" href="../rank/rank.html">销售排名</a></li>
+					<li><a class="userLogs" href="../logmanage/infor.html">客户日志</a></li>
+					<li><a class="modifyInfo" href="../infocompli/changeAdminInfor.html">修改管理员信息</a></li>
+					<li><a class="appDownLoad" href="../QRcode/appDownLoad.html">移动APP下载</a></li>
+					<!--
+                    	作者：1763257419@qq.com
+                    	时间：2018-03-30
+                    	描述：二级客户菜单
+                    -->
+                	<?php
+				   		 }else if($count==2){
+				    ?>
+                    <li><a id="addUser" href="../UserManage/UserManage.html">添加客户</a></li>
+                    <li><a id="addDev" href="../Adddevice/index.html">添加设备</a></li>
+                    <li><a class="devMap" href="../DevMap/dev_map.html">设备地图</a></li>
+                    <li><a class="devList" href="../devlist/index_devlist.html">设备列表</a></li>
+                    <li><a class="modifyInfo" href="../infocompli/infor.html">修改客户信息</a></li>
+                    <li><a class="userLogs" href="../logmanage/infor.html">客户日志</a></li>
+                    <li><a class="appDownLoad" href="../QRcode/appDownLoad.html">移动APP下载</a></li>
+                    <li><a class="QA" href="../QA/news.html">客户问题跟踪</a></li>
+                    <li><a class="feedback" href="../OA/index.html">客户信息反馈</a></li>
+                    <!--
+                    	作者：1763257419@qq.com
+                    	时间：2018-03-30
+                    	描述：三级客户菜单
+                    -->
+                	<?php
+					    }else if($count==3){
+					?>
+					<li><a class="devMap" href="../DevMap/dev_map.html">设备地图</a></li>
+                    <li><a class="devList" href="../devlist/index_devlist.html">设备列表</a></li>
+                    <li><a class="modifyInfo" href="../infocompli/infor.html">修改客户信息</a></li>
+                    <li><a class="userLogs" href="../logmanage/infor.html">客户日志</a></li>
+                    <li><a class="appDownLoad" href="../QRcode/appDownLoad.html">移动APP下载</a></li>
+					<li><a class="QA" href="../QA/news.html">客户问题跟踪</a></li>
+                    <li><a class="devInfoFeedBack" href="../devInfoFeedBack/devInfoFeedBack.html">设备信息反馈</a></li>
+                    <?php
+				    	}
+				    ?>
+				</ul>
+			</div>
+		</div>
+		<div id="right">
+			<div id="title">
+				<div id="list-icon">
+					<a href="../devlist/index_devlist.html"><img src="../img/common/list-title.png"/></a>
+				</div>
+				<h1>亿维自动化物联网云平台</h1>
+				<div id="userinfo-box">
+					<div id="head-icon">
+						<a href="../main.html"><img src="../img/common/驯鹿.png"/></a>
+					</div>
+					<div id="user-info">
+						<li class="list" id="user-name">
+							<?php echo $_SESSION['UserName'];?>
+							<ul>
+								<li class="list"><a id="out" href="../exit.php">退出登录</a></li>
+							</ul>
+						</li>
+					</div>
+				</div>
+			</div>
+			<div id="main-box">
+				<div id="config-title">
+					<a href="javascript:void(0)" id="cfg">基本配置</a>
+					<a href="../DevAlarm/DevAla.html?SN='+res.result[i].SN+'">报警配置</a>
+					<a href="../DevAlarmView/DevAlarmView.html?SN='+res.result[i].SN+'">报警信息</a>
+					<a href="../DevRun/DevRun.html?SN='+res.result[i].SN+'">实时数据</a>
+					<a href="../history/history.html?SN='+res.result[i].SN+'">历史数据</a>
+					<a href="../history/historyChart.html?SN='+res.result[i].SN+'">历史曲线</a>
+					<p>SN:  <input readonly="true" id="SN"  value=<?php  echo $strSN;?>></p>
+				</div>
+				<div id="config-body">
+					<div id="act-box">
+						<!-- <a  class="back" href="../devlist/index_devlist.html">返&nbsp&nbsp回</a> -->
+						<input type="button" id="SaveCfg_btn" name="" value="更&nbsp&nbsp新">		
+					</div>
+					<div class="grid_table" style="width: 950px;height: 600px;margin-left: 50px;margin-top: 0;">			
+						<table id="list"></table>
+						
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>		
+</body>  
+</html>  
+
+<script type="text/javascript">
+ var teststr=<?php echo $tempstr;?>;
+if(teststr==0)
+{
+window.location.href="../index.html";
+}
+
+$(function(){
+	$('.list').hover(function(){
+		$(this).children('ul').stop().slideDown('fast');
+	},function(){
+		$(this).children('ul').stop().slideUp('fast');
+	});
+});
+
+
+
+	
+
+var SNstr=<?php echo $strSN;?>;
+
+
+$(document).ready(function() {
+var strJQGrid;
+strJQGrid = 'devcfg.php?SN='+SNstr;
+	//jqGrid//////////////////////////////////////////////////////////////////////////////////////////////////////////
+				jQuery("#list").jqGrid({  
+						// 请求后台json数据的url  
+						url:strJQGrid,  
+						// 后台返回的数据格式  
+						datatype: "json",  
+						// 列表标题  
+						colNames: ['序号', '属性', '显示屏蔽'], //数据列名称（数组）
+						colModel: [//数据列各参数信息设置
+							{name: 'Offset', index: 'Offset',  width: 20, align: 'center', title: false},
+							{name: 'ItemName', index: 'ItemName', width: 30, title: false, align: 'center'},
+							//{name: 'Visible', index: 'Visible', width: 30, align: 'center',editable: true,edittype:"checkbox",editoptions: {value:"是:否"}},
+							//{name: 'Alarmable', index: 'Alarmable', width: 30, align: 'center',editable: true,edittype:"checkbox",editoptions: {value:"是:否"}}
+							{name:'Visible', index:'Visible', width: 30, align:'center',
+								 formatter:'checkbox', editoptions:{value:'1:0'},
+								 formatoptions:{disabled:false}, }
+						//	{name:'Alarmable', index:'Alarmable', width: 30, align:'center',
+						//				 formatter:'checkbox', editoptions:{value:'0:1'},
+						//				 formatoptions:{disabled:false}, } 
+						],
+						// 一页显示的行记录数  
+					    rowNum:-1,
+						// 表格宽度  
+						width:950,  
+						// 表格高度  
+						height:550,  
+						// 翻页控制条中 每页显示记录数可选集合  
+						
+						// 排序
+						//sortname:'Offset',
+						// 默认字段排序顺序，默认asc，正序  
+						//sortorder: "asc",   
+						// 列表总标题  
+						
+						// 数据加载完成并且DOM创建完毕之后的回调函数  
+						gridComplete: function(){  
+							//TODO  
+						},  
+						// 单元格被点击选择回调函数， rowid为改行数据id值，iCol为改行索引，cellcontent为该行html代码，e为click事件  
+						onCellSelect: function(rowid, iCol, cellcontent,e){  
+							//TODO  
+						},
+						 onSelectRow : function(ids) { 
+							/*	var sels = $("#list").jqGrid('getGridParam', 'selrow');
+								var rowData = $('#list').jqGrid('getRowData',sels);
+								alert( rowData.Visible);*/
+						 },
+						editurl: "MyEdit.php",	
+					});  
+	
+	})
+
+
+
+$('#SaveCfg_btn').click(function(){
+	var o = jQuery("#list");
+	var rows = o.jqGrid('getRowData'); //获取当前显示的记录
+	var rowData =$.toJSON(rows); 
+	var strJQGrid;
+	strJQGrid = './DB_SaveCfg.php?SN='+SNstr;
+	//"./db/DB_SaveCfg.php?SN=1509507302527293000&&ProtocolVer=十一月协议"
+	$.ajax({
+		type:"POST",
+		//url:"./db/DB_SaveCfg.php",
+		url:strJQGrid,
+		data: {"rowdata_send":rowData},
+		dataType:"json",
+		async:false,
+		success:function(json)
+		{
+			if (json.state == 200)
+			{  
+				alert('更新成功！');
+			}
+		}
+	});    
+});
+
+
+////////////////////////////关页面			
+var clientX = 0;
+var clientY = 0;
+
+window.onmousedown = function (event) {
+      event = event || window.event;
+      clientX = event.clientX;
+      clientY = event.clientY;
+}
+
+window.onbeforeunload = function () {
+if( clientY < 20){
+	$.ajax({
+	type:"POST",
+	url:"../cleansession.php",
+	data: {"clean":"退出登录"},
+	dataType:"json",
+	async:false,
+	success:function(data)
+	{						
+	}
+	});	
+}
+};
+
+
+</script>
+
+
+

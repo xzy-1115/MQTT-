@@ -1,0 +1,631 @@
+﻿<html>
+<head>
+	<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+	<title>设备注册</title>
+	<link rel="stylesheet" type="text/css" href="../css/common.css">
+	<link rel="stylesheet" type="text/css" href="../css/devReg.css">
+	<script type="text/javascript" src="http://api.map.baidu.com/api?v=2.0&ak=NkMIX99EyeqCnDFTYFm3h1a9WDQXZYWx"></script>
+	<script type="text/javascript" src="../JS/jquery1-1.7.2.min.js" ></script>
+	<script type="text/javascript" src="../JS/jquery.json-2.3.min.js"></script>
+	<script type="text/javascript" src="../MQTT/mqttws31.js" ></script>
+    <script  type="text/javascript" src="../MQTT/config.js"></script>
+</head>
+ <?php 
+	session_start(); 
+	if($_SESSION['UserName'])
+	$tempstr=1;
+	//$tempstr=0;
+	else $tempstr=0;
+?>
+<body>
+	<div class="center public-width" id="container">
+		<div id="left">
+			<div id="logo">
+				<img src="../img/common/logo_黑底.png"/>
+			</div>
+			<div id="menu-box">
+				<ul id="menu">
+					<!--管理员菜单-->
+					<?php
+						session_start();
+						include_once ("../connect.php");
+						$result = mysql_query("SELECT * FROM use_login WHERE UserName ='".$_SESSION['UserName']."'  ");
+						$row = mysql_fetch_array($result, MYSQL_ASSOC);
+						$count = $row['Role'];
+						if($count==1){
+					?>
+					<li><a id="userMap" href="../UserMap/user_map.html">客户地图</a></li>
+					<li><a class="devMap" href="../DevMap_admin/devMap_admin.html">设备地图</a></li>
+					<li><a class="search" href="../searchInfo/searchInfo.html">信息搜索</a></li>
+					<li><a id="saleRank" href="../rank/rank.html">销售排名</a></li>
+					<li><a class="userLogs" href="../logmanage/infor.html">客户日志</a></li>
+					<li><a class="modifyInfo" href="../infocompli/changeAdminInfor.html">修改管理员信息</a></li>
+					<li><a class="appDownLoad" href="../QRcode/appDownLoad.html">移动APP下载</a></li>
+					<!--
+                    	作者：1763257419@qq.com
+                    	时间：2018-03-30
+                    	描述：二级客户菜单
+                    -->
+                	<?php
+				   		 }else if($count==2){
+				    ?>
+                     <li><a id="addUser" href="../UserManage/UserManage.html">添加客户</a></li>
+                    <li><a id="addDev" href="../Adddevice/index.html">添加设备</a></li>
+                    <li><a class="devMap" href="../DevMap/dev_map.html">设备地图</a></li>
+                    <li><a class="devList" href="../devlist/index_devlist.html">设备列表</a></li>
+                    <li><a class="modifyInfo" href="../infocompli/infor.html">修改客户信息</a></li>
+                    <li><a class="userLogs" href="../logmanage/infor.html">客户日志</a></li>
+                    <li><a class="appDownLoad" href="../QRcode/appDownLoad.html">移动APP下载</a></li>
+                    <li><a class="QA" href="../QA/news.html">客户问题跟踪</a></li>
+                    <li><a class="feedback" href="../OA/index.html">客户信息反馈</a></li>
+                    <!--
+                    	作者：1763257419@qq.com
+                    	时间：2018-03-30
+                    	描述：三级客户菜单
+                    -->
+                	<?php
+					    }else if($count==3){
+					?>
+					<li><a class="devMap" href="../DevMap/dev_map.html">设备地图</a></li>
+                    <li><a class="devList" href="../devlist/index_devlist.html">设备列表</a></li>
+                    <li><a class="modifyInfo" href="../infocompli/infor.html">修改客户信息</a></li>
+                    <li><a class="userLogs" href="../logmanage/infor.html">客户日志</a></li>
+                    <li><a class="appDownLoad" href="../QRcode/appDownLoad.html">移动APP下载</a></li>
+					<li><a class="QA" href="../QA/news.html">客户问题跟踪</a></li>
+                    <li><a class="devInfoFeedBack" href="../devInfoFeedBack/devInfoFeedBack.html">设备信息反馈</a></li>
+                    <?php
+				    	}
+				    ?>
+				</ul>
+			</div>
+		</div>
+		<div id="right">
+			<div id="title">
+				<div id="list-icon">
+					<a href="../Adddevice/index.html"><img src="../img/common/list-title.png"/></a>
+				</div>
+				<h1>亿维自动化物联网云平台</h1>
+				<div id="userinfo-box">
+					<div id="head-icon">
+						<a href="../main.html"><img src="../img/common/驯鹿.png"/></a>
+					</div>
+					<div id="user-info">
+						<li class="list" id="user-name">
+							<?php echo $_SESSION['UserName'];?>
+							<ul>
+								<li class="list"><a id="out" href="../exit.php">退出登录</a></li>
+							</ul>
+						</li>
+					</div>
+				</div>
+			</div>
+			<div id="main-box">
+				<div id="devReg-title" class="title">
+					<p>添加设备信息</p>
+				</div>
+				<div id="devReg-body">
+					<div id="input-box">
+						<div class="input-info">
+							<p>SN</p>&nbsp&nbsp<input type="text" name="SN" id="iSN" value="" placeholder="&nbsp&nbsp设备SN码" onchange="SNEnd()"/>
+						</div>
+						<div class="input-info">
+							<p>校验码</p>&nbsp&nbsp<input type="text" id="iCheckCode" value="" placeholder="&nbsp&nbsp校验码" onchange="CheckCodeEnd()"/>
+						</div>
+						<div class="input-info">
+							<p>现场名称</p>&nbsp&nbsp<input type="text" id="iLocalName" value="" placeholder="&nbsp&nbsp现场名称" onchange="check()" />
+						</div>
+						<div class="input-info">
+							<p id="indus-type">行业类型</p>&nbsp
+							<select name="" id="iLocalType">	
+								<option value="0">&nbsp&nbsp智能车库</option>
+								<option value="1">&nbsp&nbsp农业大棚</option>
+								<option value="2">&nbsp&nbsp温控系统</option>
+								<option value="3">&nbsp&nbsp暖通行业</option>
+								<option value="4">&nbsp&nbsp塑胶机械</option>
+								<option value="5">&nbsp&nbsp纺织机械</option>
+								<option value="6">&nbsp&nbsp矿山机械</option>
+								<option value="7">&nbsp&nbsp冶金行业</option>
+								<option value="8">&nbsp&nbsp电力行业</option>
+								<option value="9">&nbsp&nbsp石化行业</option>
+								<option value="10">&nbsp&nbsp建材行业</option>
+								<option value="11">&nbsp&nbsp汽车制造</option>
+								<option value="12">&nbsp&nbsp包装机械</option>
+								<option value="13">&nbsp&nbsp电子设备</option>
+								<option value="14">&nbsp&nbsp水处理</option>
+								<option value="15">&nbsp&nbsp仿真设备</option>
+								<option value="16">&nbsp&nbsp养殖行业</option>
+								<option value="17">&nbsp&nbsp冷库行业</option>
+								<option value="18">&nbsp&nbsp消防设备</option>
+								<option value="19">&nbsp&nbsp环保行业</option>
+								<option value="20">&nbsp&nbsp医药行业</option>
+								<option value="21">&nbsp&nbsp轨道交通行业</option>
+								<option value="22">&nbsp&nbsp核电行业</option>
+							</select>
+						
+						</div>
+						<div class="input-info">
+							<p>地址</p>&nbsp&nbsp<input type="text" id="Addr" value="" placeholder="&nbsp&nbsp点击地图获取地址" onchange="check()"/>
+							<input type="hidden" id="OpType" name ="OpType" />
+							<input type="hidden" id="lng" />
+							<input type="hidden" id="lat" />
+						</div>
+						<div class="input-info" id="submit">
+							<a href="#" id="ProtocolSyn" onclick="ProtocolSynProc()">协议同步</a>
+						</div>
+					</div>
+					<div id="allmap">
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+</body>
+</body>
+</html>
+
+<script type="text/javascript">
+ var teststr=<?php echo $tempstr;?>;
+if(teststr==0)
+{
+window.location.href="../index.html";
+}
+	// 退出登录的下拉效果
+	$(function(){
+		$('.list').hover(function(){
+			$(this).children('ul').stop().slideDown('fast');
+		},function(){
+			$(this).children('ul').stop().slideUp('fast');
+		});
+	});
+
+//、、、、、、、、、、
+//需要传入客户的ID信息
+//、、、、、、、、、、
+//var ID_Name = "湖北大学";
+////////////////////MQTT////////////////////////////////
+var check_flag=1;
+	var mqtt;
+	var reconnectTimeout = 2000;
+	var map ;
+	var geoc;
+	var myValue;
+$(document).ready(function() {
+    document.getElementById("ProtocolSyn").disabled=true;
+  //  document.getElementById("AddDev").disabled=true;
+	
+	//document.getElementById("DelDev").disabled=true;		
+		BaiduMapInit();
+        MQTTconnect();
+	
+    });
+
+	
+///////////////////百度地图//////////////////////////////
+	// 百度地图API功能
+		
+	function BaiduMapInit(e){
+	//var map = new BMap.Map("allmap");						//初始化地图
+	map = new BMap.Map("allmap",{enableMapClick:false}); 
+	map.clearOverlays();									// 清除已有标注
+	var point = new BMap.Point(116.331398,39.897445);		//定位中心
+	map.centerAndZoom(point,12);
+	geoc = new BMap.Geocoder();  						//地址逆向解析用
+	map.addEventListener("click", showInfo);				//点击标注事件
+	map.enableScrollWheelZoom();   							//启用滚轮放大缩小，默认禁用
+	map.enableContinuousZoom();    							//启用地图惯性拖拽，默认禁用
+	var geolocation = new BMap.Geolocation();				//获取浏览器地址用
+	geolocation.getCurrentPosition(BrouseAddr,{enableHighAccuracy: true})
+	
+	var ac = new BMap.Autocomplete(    //建立一个自动完成的对象
+	{"input" : "Addr"
+	,"location" : map
+	});
+	
+	ac.addEventListener("onhighlight", function(e) {  //鼠标放在下拉列表上的事件
+	var str = "";
+		var _value = e.fromitem.value;
+		var value = "";
+		if (e.fromitem.index > -1) {
+			value = _value.province +  _value.city +  _value.district +  _value.street +  _value.business;
+		}    
+		str = "FromItem<br />index = " + e.fromitem.index + "<br />value = " + value;
+		
+		value = "";
+		if (e.toitem.index > -1) {
+			_value = e.toitem.value;
+			value = _value.province +  _value.city +  _value.district +  _value.street +  _value.business;
+		}    
+		str += "<br />ToItem<br />index = " + e.toitem.index + "<br />value = " + value;
+		G("searchResultPanel").innerHTML = str;
+	});
+
+
+	ac.addEventListener("onconfirm", function(e) {    //鼠标点击下拉列表后的事件
+	var _value = e.item.value;
+		myValue = _value.province +  _value.city +  _value.district +  _value.street +  _value.business;
+		G("searchResultPanel").innerHTML ="onconfirm<br />index = " + e.item.index + "<br />myValue = " + myValue;
+		
+		setPlace();
+	});
+	}
+	function G(id) {
+		return document.getElementById(id);
+	}
+
+	function setPlace(){
+		map.clearOverlays();    //清除地图上所有覆盖物
+		function myFun(){
+			var pp = local.getResults().getPoi(0).point;    //获取第一个智能搜索的结果
+			map.centerAndZoom(pp, 18);
+			map.addOverlay(new BMap.Marker(pp));    //添加标注
+		}
+		var local = new BMap.LocalSearch(map, { //智能搜索
+		  onSearchComplete: myFun
+		});
+		local.search(myValue);
+	}
+	
+	//浏览器默认地址
+	function BrouseAddr(r){
+		if(this.getStatus() == BMAP_STATUS_SUCCESS){
+			var mk = new BMap.Marker(r.point);
+			map.addOverlay(mk);								//全景场景内添加覆盖物
+			map.panTo(r.point);								//将地图的中心点更改为给定的点
+			//alert('您的位置：'+r.point.lng+','+r.point.lat);
+		}
+		else {
+			alert('failed'+this.getStatus());
+		}        
+	}
+	//关于状态码
+	//BMAP_STATUS_SUCCESS	检索成功。对应数值“0”。
+	//BMAP_STATUS_CITY_LIST	城市列表。对应数值“1”。
+	//BMAP_STATUS_UNKNOWN_LOCATION	位置结果未知。对应数值“2”。
+	//BMAP_STATUS_UNKNOWN_ROUTE	导航结果未知。对应数值“3”。
+	//BMAP_STATUS_INVALID_KEY	非法密钥。对应数值“4”。
+	//BMAP_STATUS_INVALID_REQUEST	非法请求。对应数值“5”。
+	//BMAP_STATUS_PERMISSION_DENIED	没有权限。对应数值“6”。(自 1.1 新增)
+	//BMAP_STATUS_SERVICE_UNAVAILABLE	服务不可用。对应数值“7”。(自 1.1 新增)
+	//BMAP_STATUS_TIMEOUT	超时。对应数值“8”。(自 1.1 新增)
+	
+	function showInfo(e){
+		var lpoint = new BMap.Point(e.point.lng,  e.point.lat);  	// 创建点坐标  
+		var marker = new BMap.Marker(lpoint);        				// 创建标注   
+		map.clearOverlays();										// 清除已有标注
+		map.addOverlay(marker);                     				// 将标注添加到地图中
+		marker.setAnimation(BMAP_ANIMATION_BOUNCE); 				// 跳动的动画
+		
+		geoc.getLocation(lpoint, ShowAddr);  
+		document.getElementById('lng').value=e.point.lng;	
+		document.getElementById('lat').value=e.point.lat;			
+	}
+	
+	function ShowAddr(rs)
+	{
+		var addComp = rs.addressComponents;
+		document.getElementById('Addr').value=addComp.province + ", " + addComp.city + ", " + addComp.district + ", " + addComp.street + ", " + addComp.streetNumber;
+	}
+///////////////////mqtt//////////////////////////////
+
+	function MQTTconnect() {
+		mqtt = new Paho.MQTT.Client(
+						host,
+						port,
+						"web_" + parseInt(Math.random() * 100,
+						10));
+		var options = {
+			timeout: 3,
+			useSSL: useTLS,
+			cleanSession: cleansession,
+			onSuccess: onConnect,
+			onFailure: function (message) {
+				setTimeout(MQTTconnect, reconnectTimeout);
+			}
+		};
+		mqtt.onConnectionLost = onConnectionLost;
+        mqtt.onMessageArrived = onMessageArrived;
+
+        if (username != null) {
+            options.userName = username;
+            options.password = password;
+        }
+        mqtt.connect(options);
+    }
+
+	function onConnect() {
+    //    mqtt.subscribe(topic, {qos: 0});
+    }
+	
+	function onConnectionLost(responseObject) {
+        setTimeout(MQTTconnect, reconnectTimeout);
+    };
+
+   function onMessageArrived(message)
+   {
+     
+		var strSN = document.getElementById('iSN').value;
+		//longitude and latitude;
+		//经纬度
+		var strLng = document.getElementById('lng').value;	
+		var strLat = document.getElementById('lat').value;	
+		var strAddr = document.getElementById('Addr').value;	
+		var strLocalName = document.getElementById('iLocalName').value;	
+		var strLocalType = document.getElementById('iLocalType').value;
+		//alert("hello");
+		var tp = "/"+$('#iSN').val()+"/DevSend/cfg/ack";
+        var topic = message.destinationName;
+        var payload = message.payloadString;
+	
+		if(topic == tp)
+		{
+			//mqtt.unsubscribe(tp);
+		//AJAX 更新协议表、协议详细表、设备协议表、实时监测和报警策略表、设备信息表、客户设备表
+		//	alert(payload);
+				$.ajax({
+					type:"POST",
+					url:"./DevReg.php",
+					data: {"PROTOCOL":payload,"SN":strSN,"Lng":strLng,"Lat":strLat,"Addr":strAddr,"LocalName":strLocalName,"LocalType":strLocalType},
+					dataType:"json",
+					async:false,
+					success:function(data)
+					{		
+						
+							alert("成功");
+						/*	 document.getElementById("ProtocolSyn").disabled=true;
+							document.getElementById("AddDev").disabled=false;
+							*/
+							window.location.href="../DevReg/DevReg.html"; 
+					
+						//else if(data.state == 7)alert("客户名已经被使用");
+						//else alert("失败");
+					}
+					});
+			
+		}
+	}
+		
+		
+	function btnDBGProc()
+	{
+		var tp = "/"+$('#iSN').val()+"/DevSend/cfg/ack";
+		//mqtt.unsubscribe(tp);
+	}
+		
+	//按钮事件
+	function btnAction(Optype)
+	{
+		document.getElementById('OpType').value=Optype;		
+	}
+	//信息更新
+	/*function dataUpdate()
+	{
+		var strSN = document.getElementById('iSN').value;
+	    var strLocalName = document.getElementById('iLocalName').value;
+		var strLocalType = document.getElementById('iLocalType').value;
+		var strAddr = document.getElementById('Addr').value;	
+		var strLng = document.getElementById('lng').value;
+		var strLat = document.getElementById('lat').value;
+			$.ajax({
+					type:"POST",
+					url:"./dataupdate.php",
+					data: {"SN":strSN,"Lng":strLng,"Lat":strLat,"Addr":strAddr,"LocalName":strLocalName,"LocalType":strLocalType},
+					dataType:"json",
+					async:false,
+					success:function(data)
+					{		
+						if (data.state == 200)
+						{  
+							alert("成功");
+							 document.getElementById("ProtocolSyn").disabled=true;
+							document.getElementById("AddDev").disabled=false
+						
+							window.location.href="../Adddevice/index.html"; 
+						}	
+						else alert("失败");
+					}
+					});
+	}*/
+	
+	//协议同步
+	function ProtocolSynProc()
+	{
+	    SNCheckCodeValid_verify();
+		if(check_flag==0){
+		var tprcv = "/"+$('#iSN').val()+"/DevSend/cfg/ack";
+		mqtt.subscribe(tprcv, {qos: 0});
+		var tp = "/"+$('#iSN').val()+"/DevRecv/cfg/req";
+		var val = "1";
+
+		var message = new Paho.MQTT.Message(val);
+		message.destinationName = tp;
+		message.qos=0;
+		mqtt.send(message);
+		}
+	}
+	
+	//保存并退出
+	function AddDevProc()
+	{
+		//1.输入检测
+		//2.获取变量
+		var strLocalName = document.getElementById('iLocalName').value;
+		var strLocalType = document.getElementById('iLocalType').value;
+		var strAddr = document.getElementById('Addr').value;	
+		var strLng = document.getElementById('lng').value;
+		var strLat = document.getElementById('lat').value;
+		
+		
+	}
+	
+	
+	function SNEnd()
+	{
+		if(document.getElementById('iSN').value==""&&document.getElementById('iCheckCode').value=="")
+		{
+			alert("设备SN码为空");
+		}
+		else
+		{
+			SNCheckCodeValid();
+		}
+	}
+	
+	function CheckCodeEnd()
+	{
+		if(document.getElementById('iSN').value==""&&document.getElementById('iCheckCode').value=="")
+		{
+			alert("操作校验码为空");
+		}	
+		else
+		{
+			SNCheckCodeValid();
+		}
+	}
+	
+	function SNCheckCodeValid()
+	{ 
+	
+		var strSN = document.getElementById('iSN').value;
+		var strCheckCode= document.getElementById('iCheckCode').value;
+		$.ajax({
+					type:"POST",
+					url:"./DevRegCheck.php",
+					data: {"SN":strSN,"CHECKCODE":strCheckCode},
+					dataType:"json",
+					async:false,
+					success:function(data)
+					{				
+						if (data.state == 1)
+						{  
+							alert("新注册");
+						//	document.getElementById("AddDev").disabled=true;
+							
+							//document.getElementById("DelDev").disabled=true;
+							document.getElementById("ProtocolSyn").disabled=false;
+						
+							//alert(tp);
+							check_flag=0;
+						}
+						else if(data.state == 3)
+						{  
+							alert("验证码超时");
+								document.getElementById("ProtocolSyn").disabled=true;
+								//document.getElementById("AddDev").disabled=true;
+								
+								//document.getElementById("DelDev").disabled=true;			
+								check_flag=1;	
+						}
+						else if(data.state == 4)
+						{  
+								if((document.getElementById('iCheckCode').value=="")||(document.getElementById('iSN').value=="")){}
+						     	else alert("SN与操作验证码不匹配");
+								document.getElementById("ProtocolSyn").disabled=true;
+							//	document.getElementById("AddDev").disabled=true;
+							
+								//document.getElementById("DelDev").disabled=true;			
+								check_flag=1;								
+						}
+						else if (data.state == 21 || data.state == 22)//设备存在，客户设备已绑定，协议不需要更新
+						{     						
+						     alert("此设备已注册");
+							//$resultJson = array("state"=>7,"LocalName"=>LocalName,"LocalType"=>LocalType,"LocalAddr"=>);//json格式的数组
+								document.getElementById('iLocalName').value = data.LocalName;
+								document.getElementById('Addr').value = data.LocalAddr;
+								document.getElementById('iLocalType').value = data.LocalType;
+								document.getElementById("ProtocolSyn").disabled=false;
+							//	document.getElementById("AddDev").disabled=true;
+								
+								//document.getElementById("DelDev").disabled=false;			
+								
+								check_flag=0;								
+						}
+							else//设备存在，客户设备没有绑定，协议需要更新
+						{   alert("绑定失败");check_flag=1;
+						}
+					}
+				});  
+	}
+	
+		function SNCheckCodeValid_verify()
+	{ 
+	
+		var strSN = document.getElementById('iSN').value;
+		var strCheckCode= document.getElementById('iCheckCode').value;
+		$.ajax({
+					type:"POST",
+					url:"./DevRegCheck.php",
+					data: {"SN":strSN,"CHECKCODE":strCheckCode},
+					dataType:"json",
+					async:false,
+					success:function(data)
+					{				
+						if (data.state == 1)
+						{  
+							
+							document.getElementById("ProtocolSyn").disabled=false;
+							check_flag=0;
+						}
+						else if(data.state == 3)
+						{  
+							alert("验证码超时");
+								document.getElementById("ProtocolSyn").disabled=true;
+								
+								check_flag=1;	
+						}
+						else if(data.state == 4)
+						{  
+								if((document.getElementById('iCheckCode').value=="")||(document.getElementById('iSN').value=="")){}
+						     	else alert("SN与操作验证码不匹配");
+								document.getElementById("ProtocolSyn").disabled=true;
+							//	document.getElementById("AddDev").disabled=true;
+								
+								//document.getElementById("DelDev").disabled=true;			
+								check_flag=1;								
+						}
+						else if (data.state == 21 || data.state == 22)//设备存在，客户设备已绑定，协议不需要更新
+						{     						
+						     alert("此设备已注册");
+							//$resultJson = array("state"=>7,"LocalName"=>LocalName,"LocalType"=>LocalType,"LocalAddr"=>);//json格式的数组
+								document.getElementById('iLocalName').value = data.LocalName;
+								document.getElementById('Addr').value = data.LocalAddr;
+								document.getElementById('iLocalType').value = data.LocalType;
+								document.getElementById("ProtocolSyn").disabled=false;
+							//	document.getElementById("AddDev").disabled=true;
+								
+								//document.getElementById("DelDev").disabled=false;			
+								
+								check_flag=0;								
+						}
+					
+							else//设备存在，客户设备没有绑定，协议需要更新
+						{   alert("绑定失败");check_flag=1;
+						}
+					}
+				});  
+	}
+////////////////////////////关页面			
+var clientX = 0;
+var clientY = 0;
+
+window.onmousedown = function (event) {
+      event = event || window.event;
+      clientX = event.clientX;
+      clientY = event.clientY;
+}
+
+window.onbeforeunload = function () {
+if( clientY < 20){
+	$.ajax({
+	type:"POST",
+	url:"../cleansession.php",
+	data: {"clean":"退出登录"},
+	dataType:"json",
+	async:false,
+	success:function(data)
+	{						
+	}
+	});	
+}
+};
+
+</script>

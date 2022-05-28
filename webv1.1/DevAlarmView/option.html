@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html>
+<head> 
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+
+</head>
+
+<?php
+$strSN = $_GET['SN'];
+$stralaTIME = $_GET['alaTIME'];
+?>
+
+<body>
+<div class="fanbox">
+    <h3>报警处理</h3>
+    <form id="add_form" action="do.php?action=add" method="post">
+        <table width="100%" cellpadding="0" cellspacing="0" class="post_table">
+            
+            <tr>
+                <td height="60">&nbsp;</td>
+                <td><input type="submit" class="btn" value="已处理" href="option.php?op='1'" onclick="$.fancybox.close();"/> <input type="button" class="btn" value="未处理" onclick="$.fancybox.close();" href="option.php?op='0'"/></td>
+            </tr>
+        </table>
+    </form>
+</div>
+</body>
+
+</html>
+
+

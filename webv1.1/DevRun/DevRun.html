@@ -1,0 +1,561 @@
+<html>
+<head>
+	<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+	<title>实时数据</title>
+	<link rel="stylesheet" type="text/css" href="../css/common.css">
+	<link rel="stylesheet" type="text/css" href="../css/devRun.css">
+	<script type="text/javascript" src="http://api.map.baidu.com/api?v=2.0&ak=NkMIX99EyeqCnDFTYFm3h1a9WDQXZYWx"></script>
+	<script type="text/javascript" src="../JS/jquery1-1.7.2.min.js" ></script>
+	<script type="text/javascript" src="../JS/jquery.json-2.3.min.js"></script>
+	<script type="text/javascript" src="../MQTT/mqttws31.js" ></script>
+    <script  type="text/javascript" src="../MQTT/config.js"></script>
+	<style type="text/css">
+		.background_box{
+			color:white;
+			width:100%;
+			height:100%;
+		background:url(back.gif);
+		background-size:100% 100%;
+		background-repeat:no-repeat;
+		}
+	</style>
+</head>
+
+<?php
+	session_start(); 
+	if($_SESSION['UserName'])
+	$tempstr=1;
+
+	else $tempstr=0;
+	
+	if($_SESSION['SN'])
+	$strSN=$_SESSION['SN'];
+
+	else {
+	$strSN = $_GET['SN'];
+	$_SESSION['SN']=$strSN;
+	}
+?>
+<body>
+<div class="center public-width" id="container">
+		<div id="left">
+			<div id="logo" style="width: 150px;height: 50px;margin-left: 30px;margin-right: auto;">
+				<img src="../img/common/logo_黑底.png"/>
+			</div>
+			<div id="menu-box">
+				<ul id="menu">
+					<!--管理员菜单-->
+					<?php
+						session_start();
+						include_once ("../connect.php");
+						$result = mysql_query("SELECT * FROM use_login WHERE UserName ='".$_SESSION['UserName']."'  ");
+						$row = mysql_fetch_array($result, MYSQL_ASSOC);
+						$count = $row['Role'];
+						if($count==1){
+					?>
+					<li><a id="userMap" href="../UserMap/user_map.html">客户地图</a></li>
+					<li><a class="devMap" href="../DevMap_admin/devMap_admin.html">设备地图</a></li>
+					<li><a class="search" href="../searchInfo/searchInfo.html">信息搜索</a></li>
+					<li><a id="saleRank" href="../rank/rank.html">销售排名</a></li>
+					<li><a class="userLogs" href="../logmanage/infor.html">客户日志</a></li>
+					<li><a class="modifyInfo" href="../infocompli/changeAdminInfor.html">修改管理员信息</a></li>
+					<li><a class="appDownLoad" href="../QRcode/appDownLoad.html">移动APP下载</a></li>
+					<!--
+                    	作者：1763257419@qq.com
+                    	时间：2018-03-30
+                    	描述：二级客户菜单
+                    -->
+                	<?php
+				   		 }else if($count==2){
+				    ?>
+                    <li><a id="addUser" href="../UserManage/UserManage.html">添加客户</a></li>
+                    <li><a id="addDev" href="../Adddevice/index.html">添加设备</a></li>
+                    <li><a class="devMap" href="../DevMap/dev_map.html">设备地图</a></li>
+                    <li><a class="devList" href="../devlist/index_devlist.html">设备列表</a></li>
+                    <li><a class="modifyInfo" href="../infocompli/infor.html">修改客户信息</a></li>
+                    <li><a class="userLogs" href="../logmanage/infor.html">客户日志</a></li>
+                    <li><a class="appDownLoad" href="../QRcode/appDownLoad.html">移动APP下载</a></li>
+                    <li><a class="QA" href="../QA/news.html">客户问题跟踪</a></li>
+                    <li><a class="feedback" href="../OA/index.html">客户信息反馈</a></li>
+                    <!--
+                    	作者：1763257419@qq.com
+                    	时间：2018-03-30
+                    	描述：三级客户菜单
+                    -->
+                	<?php
+					    }else if($count==3){
+					?>
+					<li><a class="devMap" href="../DevMap/dev_map.html">设备地图</a></li>
+                    <li><a class="devList" href="../devlist/index_devlist.html">设备列表</a></li>
+                    <li><a class="modifyInfo" href="../infocompli/infor.html">修改客户信息</a></li>
+                    <li><a class="userLogs" href="../logmanage/infor.html">客户日志</a></li>
+                    <li><a class="appDownLoad" href="../QRcode/appDownLoad.html">移动APP下载</a></li>
+					<li><a class="QA" href="../QA/news.html">客户问题跟踪</a></li>
+                    <li><a class="devInfoFeedBack" href="../devInfoFeedBack/devInfoFeedBack.html">设备信息反馈</a></li>
+                    <?php
+				    	}
+				    ?>
+				</ul>
+			</div>
+		</div>
+		<div id="right">
+			<div id="title">
+				<div id="list-icon">
+					<a href="../devlist/index_devlist.html"><img src="../img/common/list-title.png"/></a>
+				</div>
+				<h1>亿维自动化物联网云平台</h1>
+				<div id="userinfo-box">
+					<div id="head-icon">
+						<a href="../main.html"><img src="../img/common/驯鹿.png"/></a>
+					</div>
+					<div id="user-info">
+						<li class="list" id="user-name">
+							<?php echo $_SESSION['UserName'];?>
+							<ul>
+								<li class="list"><a id="out" href="../exit.php">退出登录</a></li>
+							</ul>
+						</li>
+					</div>
+				</div>
+			</div>
+			<div id="main-box">
+				<div id="devRun-title">
+					<a href="../DevCfg/DevCfg.html?SN='+res.result[i].SN+'" id="cfg">基本配置</a>
+					<a href="../DevAlarm/DevAla.html?SN='+res.result[i].SN+'">报警配置</a>
+					<a href="../DevAlarmView/DevAlarmView.html?SN='+res.result[i].SN+'">报警信息</a>
+					<a href="javascript:void(0)" id="decRun">实时数据</a>
+					<a href="../history/history.html?SN='+res.result[i].SN+'">历史数据</a>
+					<a href="../history/historyChart.html?SN='+res.result[i].SN+'">历史曲线</a>
+					<p>SN:  <input readonly="true" id="SN"  value=<?php  echo $strSN;?>></p>
+				</div>
+				
+				<div id="devRun-body">
+					<div id="devRunData-title">
+					   <p>数据名称</p>
+					   <p>实时数据值</p>
+					   <p>单位</p>
+					   <p>瞬时读取</p>
+					   <p>数据写入值</p>
+					   <p>瞬时写入</p>
+					</div>
+                                                                             
+					<div>
+						<ul id='ws'></ul>
+						<br>
+					</div>
+				    <div id="add"></div>   
+					
+				</div>
+			</div>
+		</div>
+	</div>		
+</body>
+</html>
+
+<script type="text/javascript">
+ var teststr=<?php echo $tempstr;?>;
+if(teststr==0)
+{
+window.location.href="../index.html";
+}
+
+	$(function(){
+		$('.list').hover(function(){
+			$(this).children('ul').stop().slideDown('fast');
+		},function(){
+			$(this).children('ul').stop().slideUp('fast');
+		});
+	});
+
+
+	
+var unitvar;
+var read_code=[];
+var protocol_ver;
+var flag_mess=0;
+var recent_data;
+var mqtt;
+var reconnectTimeout = 2000;
+var SNstr=<?php echo $strSN;?>;
+var flag_str=1;
+var pro_old;
+
+
+
+
+$(document).ready(function() {
+ $.ajax({
+						type:"POST",
+						url:"pro.php",
+						data: {"SN":SNstr},
+						dataType:"json",
+						async:false,
+						success:function(s)
+						{				
+							pro_old=s.information;	
+						}
+					});  
+	MQTTconnect();
+})
+/*
+---数据写---
+/sn/DevRecv/WrOnce/req  网页->设备 协议版本_偏移_值
+/sn/DevRecv/WwOnce/ack  设备->网页 协议版本_操作成功或失败
+---数据读---
+/sn/DevRecv/RdOnce/req  网页->设备 协议版本_偏移
+/sn/DevRecv/RwOnce/ack  设备->网页 协议版本_偏移_值
+*/
+
+////////////////////////////////////////////mqtt//////////////////////////////////////
+function MQTTconnect() {
+		mqtt = new Paho.MQTT.Client(
+						host,
+						port,
+						"web_" + parseInt(Math.random() * 100,
+						10));
+		var options = {
+			timeout: 3,
+			useSSL: useTLS,
+			cleanSession: cleansession,
+			onSuccess: onConnect,
+			onFailure: function (message) {
+				setTimeout(MQTTconnect, reconnectTimeout);
+			}
+		};
+		mqtt.onConnectionLost = onConnectionLost;
+        mqtt.onMessageArrived = onMessageArrived;
+
+        if (username != null) {
+            options.userName = username;
+            options.password = password;
+        }
+        mqtt.connect(options);
+    }
+function onConnect() {
+var topic_recieve="/"+SNstr+"/DevSend/runtime/on";
+var topic_recieve2="/"+SNstr+"/DevRecv/RwOnce/ack";
+	mqtt.subscribe(topic_recieve, {qos: 0});
+	mqtt.subscribe(topic_recieve2, {qos: 0});
+	var tp="/"+SNstr+"/DevRecv/runtime/switch";
+MqttGetDevCfg(tp,"1");//进页面开数据
+//alert("ok");
+}
+
+function onConnectionLost(responseObject) {
+	setTimeout(MQTTconnect, reconnectTimeout);
+};
+
+/////数据合法性检测
+function check_valid(val)
+{
+ var patten = /^-?\d+\.?\d*$/;
+
+ return patten.test(val);
+}
+////
+
+
+	function addInput(propstr,propstr1,vis,key,unit,type,readable,writable)
+{
+var topic_send="/"+SNstr+"/DevRecv/RdOnce/req";
+var topic_write="/"+SNstr+"/DevRecv/WrOnce/req";
+var title_str="数据名称_实时数据值_单位_瞬时读取_数据写入值_瞬时写入";
+var title_array=title_str.split("_");
+    var ary = propstr.split("|");
+	var content = "";
+	var ary1 = propstr1.split("_");
+	var strunit=unit.split("|");
+	var strtype=type.split("|");
+	var strreadable=readable.split("|");
+	var strwritable=writable.split("|");
+	var i;
+	var DEL="#delete_";//值
+	var INPUT="#input_";//字段名
+	var UNIT="#unit_";//单位
+	var READ="#read_";//读取
+	var VAR="#var_";//写入数据值
+	var WRITE="#write_";//写入
+	if(key){
+		var x,y=0,offset=1;
+			for(x=0;x<vis.length;x++)
+			{
+				 if(vis.substr(x, 1)=='1')
+				{  
+					read_code[y]= (x+1);
+					y++;
+				}
+			}		
+/*
+var Tx=0;
+for(Tx=0;Tx<6;Tx++){
+var title = document.createElement("input");
+var titleId = "title_"+Tx;
+title.setAttribute("type","text");/////抬头
+title.setAttribute("name","prop");
+title.setAttribute("maxlength","15");
+title.setAttribute("value",title_array[Tx]);
+title.setAttribute("id",titleId);
+title.readOnly = true;
+obj.appendChild(title);
+}
+obj.appendChild(br);		*/
+			
+				for(i=0;i<ary.length;i++)
+				{
+						ary1[i]="";
+						var obj = document.getElementById("add");
+						var inputFile = document.createElement("input");
+						 inputId = "input_"+i;
+						 deleteId = "delete_"+i;
+						 unitId = "unit_"+i;//danwei
+						 readbutton="read_"+i;
+						 varstr="var_"+i;
+						 writebutton="write_"+i;
+						inputFile.setAttribute("type","text");
+						inputFile.setAttribute("name","prop");
+						inputFile.setAttribute("value",ary[i]);
+						inputFile.setAttribute("id",inputId);
+							inputFile.readOnly = true;
+							var del = document.createElement("input");  
+							del.readOnly = true;
+							del.setAttribute("type","text");  
+							del.setAttribute("value",ary1[i]); //值
+							del.setAttribute("id",deleteId);
+							var unitvar = document.createElement("input");  //unit
+							unitvar.readOnly = true;
+							unitvar.setAttribute("type","text");  
+							unitvar.setAttribute("value",strunit[i]); //值
+							unitvar.setAttribute("id",unitId);
+							var read = document.createElement("input");    // 生成input对象
+								read.type = "button";                                       // 生成input属性value
+								read.value = "读取数据";
+								read.id = readbutton;       
+								read.onclick = function () {                          //绑定点击事件
+									var name=this.id;	
+									var name_code=name.split("_");
+									var off;
+									//alert(recent_data);
+									off=read_code[parseInt(name_code[1])];
+								    MqttGetDevCfg(topic_send,protocol_ver+'_'+off);
+									//flag=0;
+								 };
+								if(strreadable[i]=='0') read.disabled = "disabled";
+						    var vartemp = document.createElement("input");  /////
+							vartemp.readOnly = false;
+							vartemp.setAttribute("type","text");  
+							vartemp.setAttribute("value",''); //值
+							vartemp.setAttribute("id",varstr);
+							var write = document.createElement("input");    // 生成input对象
+							write.type = "button";                                       // 生成input属性value
+							write.value = "写入数据";
+							write.id = writebutton;    
+							write.onclick = function () {                          //绑定点击事件
+									var name=this.id;	
+									var name_code=name.split("_");//name_code[1]标号
+									var value_get = document.getElementById("var_"+name_code[1]).value;
+									var off;
+									//alert(recent_data);
+									off=read_code[parseInt(name_code[1])];
+									/*var fuhao=strunit[parseInt(name_code[1])];
+									value_get = value_get.replace(new RegExp(fuhao), "");
+									console.log(value_get);*/
+									if(check_valid(value_get)){
+										if(parseInt(value_get)<65535 && parseInt(value_get)>0){
+									   MqttGetDevCfg(topic_write,protocol_ver+'_'+off+'_'+value_get);	
+									   }
+									   else alert("请输入有效范围0~65535");
+								   }
+								   else alert("请输入合法数据!");
+									
+								 };
+								 
+								if(strwritable[i]=='0') write.disabled = "disabled";
+							var p = document.createElement("p");
+							var br= document.createElement("br");
+							obj.appendChild(inputFile);
+							obj.appendChild(del);
+							obj.appendChild(unitvar);
+							obj.appendChild(read);
+							obj.appendChild(vartemp);
+							obj.appendChild(write);
+							obj.appendChild(p);
+							obj.appendChild(br);	 
+
+				} 
+	}
+		else 
+		{   
+				var m=0;
+				var p=0;
+				for(i=0;i<vis.length;i++)
+				{ 
+					   if(vis.substr(i, 1)=='1')
+					   {   
+								$(DEL+m).val(ary1[(i+1)*2]);	
+						        $(DEL+m).css({'background-color':'#EC6F1C','color':'#fff'}); 
+								$(DEL+m).css({'background-color' : '#fff', 'font-weight' : 'lighter','font-size':'20px','text-align':'center','position':'relative', 'left': '20px', 'width': '209px','height':'50px','border':'1px solid #808082','color':'#EC6F1C'});	
+							   $(INPUT+m).css({'background-color' : '#fff', 'font-weight' : 'lighter','font-size':'20px','text-align':'center', 'position':'relative', 'left': '20px', 'width': '169px','height':'50px','border':'1px solid #EC6F1C','background-color':'#EC6F1C','color':'#fff'});
+								$(UNIT+m).css({'background-color' : '#fff', 'font-weight' : 'lighter','font-size':'20px','text-align':'center', 'position':'relative','left': '20px', 'width': '129px','height':'50px','border':'1px solid #808082'});
+								if(document.getElementById("read_"+m).disabled == false){
+								$(READ+m).css({'background-color' : '#fff', 'font-weight' : 'lighter','font-size':'20px','text-align':'center','position':'relative', 'left': '20px', 'width': '129px','height':'50px','border':'1px solid #808082','background-color':'dodgerblue','color':'#fff'});	
+								}
+								else {
+								$(READ+m).css({'background-color' : '#fff', 'font-weight' : 'lighter','font-size':'20px','text-align':'center','position':'relative', 'left': '20px', 'width': '129px','height':'50px','border':'1px solid #808082','background-color':'#808082','color':'#fff'});	
+								}
+							$(VAR+m).css({'background-color' : '#fff', 'font-weight' : 'lighter','font-size':'20px','text-align':'center','position':'relative', 'left': '20px', 'width': '209px','height':'50px','border':'1px solid #808082'});	
+								if(document.getElementById("write_"+m).disabled == false){
+								$(WRITE+m).css({'background-color' : '#fff', 'font-weight' : 'lighter','font-size':'20px','text-align':'center','position':'relative', 'left': '20px', 'width': '129px','height':'50px','border':'1px solid #808082','background-color':'dodgerblue','color':'#fff'});
+								}
+								else
+									{
+									$(WRITE+m).css({'background-color' : 'red', 'font-weight' : 'lighter','font-size':'20px','text-align':'center','position':'relative', 'left': '20px', 'width': '129px','height':'50px','border':'1px solid #808082','background-color':'#808082','color':'#fff'});
+									}								
+								
+								//$(ID3+m).css("background-color","Chartreuse");
+								m++;
+							                              
+					   }	
+				}
+		}
+}
+
+function onMessageArrived(message)
+{
+//flag=1;
+/*/DevRecv/cfg/req
+/DevSend/cfg/ack*/
+var topic_1="/"+SNstr+"/DevSend/runtime/on";
+var topic_2="/"+SNstr+"/DevRecv/RwOnce/ack";
+var topic_3="/"+SNstr+"/DevSend/cfg/ack";
+	var topic = message.destinationName;
+	var payload = message.payloadString;	
+
+if(topic==topic_1){
+    var ary = payload.split("_");
+	var name = ary[0];
+	if(name!=pro_old){
+			alert("协议有变,自动更新协议,请不要关闭页面!")
+	        var yy="/"+SNstr+"/DevRecv/runtime/switch";
+			MqttGetDevCfg(yy,"0");	
+			//var topic_recieve="/"+SNstr+"/DevSend/runtime/on";
+			//	mqtt.subscribe(topic_recieve2, {qos: 0});
+			//mqtt.unsubscribe(topic_recieve);
+			  var topic_recieve2="/"+SNstr+"/DevSend/cfg/ack";
+		                    	mqtt.subscribe(topic_recieve2, {qos: 0});
+			var xx="/"+SNstr+"/DevRecv/cfg/req";
+			MqttGetDevCfg(xx,"1");		
+				
+	}else {
+	protocol_ver=ary[0];
+	var getstring;
+	var type,readable,writable;
+	var mask;
+		 $.ajax({
+						type:"POST",
+						url:"runtime.php",
+						data: {"SN":SNstr,"pro_name":name},
+						dataType:"json",
+						async:false,
+						success:function(s)
+						{				
+							if(s.information==100)
+							{
+								alert("协议不适配,请关闭页面重试！");
+							}
+							else {
+									   mask=s.mask;
+									   getstring=s.state;//"unit"=>$unit,"type"=>$type,"Readable"=>$Readable,"Writable"=>$Writable
+									   unitvar=s.unit;								  
+									   type=s.type;
+									   readable=s.Readable;
+									   writable=s.Writable;
+									   //alert(writable);
+									   addInput(getstring,payload,mask,flag_str,unitvar,type,readable,writable);
+									   flag_str=0;	
+							        }
+						}
+					});  
+addInput(getstring,payload,mask,flag_str,unitvar,type,readable,writable);
+}
+//flag=0;
+}
+//alert(unit+'-'+type+'-'+readable+'-'+writable);}
+if(topic==topic_2){
+
+	var offset;
+	var index;
+	var data=payload.split("_");
+	offset=parseInt(data[1]);
+	index=read_code.indexOf(offset)
+	//alert(index);
+	document.getElementById("delete_"+index).value=data[2];
+}
+if(topic==topic_3)
+{
+  $.ajax({
+						type:"POST",
+						url:"protocol_change.php",
+						data: {"SN":SNstr,"PROTOCOL":payload},
+						dataType:"json",
+						async:false,
+						success:function(s)
+						{				
+							if(s.state==200){	
+							   // var topic_recieve="/"+SNstr+"/DevSend/runtime/on";
+		                    	//mqtt.subscribe(topic_recieve, {qos: 0});
+								var topic_recieve2="/"+SNstr+"/DevSend/cfg/ack";
+								//	mqtt.subscribe(topic_recieve2, {qos: 0});
+								mqtt.unsubscribe(topic_recieve2);
+								pro_old=s.pro;
+								var yy="/"+SNstr+"/DevRecv/runtime/switch";
+								MqttGetDevCfg(yy,"1");
+
+								alert("协议已经更新!");
+						 }
+						}
+					});  
+}
+
+}
+
+function MqttGetDevCfg(tp,val)
+{
+	var message = new Paho.MQTT.Message(val);
+	message.destinationName = tp;
+	message.qos=0;
+	mqtt.send(message);
+}
+
+
+	
+////////////////////////////关页面			
+var clientX = 0;
+var clientY = 0;
+
+window.onmousedown = function (event) {
+      event = event || window.event;
+      clientX = event.clientX;
+      clientY = event.clientY;
+}
+
+window.onbeforeunload = function () {
+var xx="/"+SNstr+"/DevRecv/runtime/switch";
+MqttGetDevCfg(xx,"0");
+if( clientY < 20){
+
+	$.ajax({
+	type:"POST",
+	url:"../cleansession.php",
+	data: {"clean":"退出登录"},
+	dataType:"json",
+	async:false,
+	success:function(data)
+	{						
+	}
+	});	
+}
+};
+</script>
+
+
+

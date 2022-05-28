@@ -1,0 +1,178 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1,minimum-scale=1,maximum-scale=1,user-scalable=no" />
+    <title></title>
+    <link href="css/mui.min.css" rel="stylesheet" />
+    <style type="text/css">
+    	.pull-right {
+            float: right;
+            position: absolute;
+            right: 0px;
+            top: 5px;
+            padding: 15px;
+        }
+        .unreaded {
+            background-color: #f6efea !important;
+        }
+        
+        .unreaded div {
+            background-color: #f6efea !important;
+        }
+        
+        .unreaded {
+            border-top: 1px solid #e0560b;
+        }
+    </style>
+</head>
+
+
+<body>
+    <header class="mui-bar mui-bar-nav">
+        <a class="mui-action-back mui-icon mui-icon-left-nav mui-pull-left public-color"></a>
+        <h1 class="mui-title">设备报警记录</h1>
+        <span class="mui-icon mui-icon-reload mui-pull-right public-color" id="refresh"></span>
+    </header>
+    <div id="refreshContainer" class="mui-content mui-scroll-wrapper">
+        <div class="mui-scroll">
+            <!--数据列表-->
+            <ul class="mui-table-view" id="alarmList">
+            </ul>
+        </div>
+    </div>
+
+    <script src="js/mui.min.js"></script>
+    <script src="js/mqttws31.min.js"></script>
+    <script src="js/jquery-2.0.3.min.js"></script>
+    <script type="text/javascript" charset="utf-8">
+        var url = "http://120.78.176.175:8081";
+        //		var url = "http://127.0.0.1:8081";
+        var userName = localStorage.getItem("userName");
+        var devSNCode = localStorage.getItem("snCode");
+        var alarmTime = "";
+        var displayDataFlag = false;
+        var data;
+        var dataName;
+        mui.init({
+            pullRefresh: {
+                container: "#refreshContainer", //下拉刷新容器标识，querySelector能定位的css选择器均可，比如：id、.class等
+                down: {
+                    style: 'circle', //必选，下拉刷新样式，目前支持原生5+ ‘circle’ 样式
+                    color: '#2BD009', //可选，默认“#2BD009” 下拉刷新控件颜色
+                    height: '50px', //可选,默认50px.下拉刷新控件的高度,
+                    range: '100px', //可选 默认100px,控件可下拉拖拽的范围
+                    offset: '0px', //可选 默认0px,下拉刷新控件的起始位置
+                    auto: true, //可选,默认false.首次加载自动上拉刷新一次
+                    contentrefresh: "正在加载...",
+                    callback: noMove //必选，刷新函数，根据具体业务来编写，比如通过ajax从服务器获取新数据；
+                },
+                up: {
+                    height: 50, //可选.默认50.触发上拉加载拖动距离
+                    auto: true, //可选,默认false.自动上拉加载一次
+                    contentrefresh: "正在加载...", //可选，正在加载状态时，上拉加载控件上显示的标题内容
+                    contentnomore: "没有更多数据了", //可选，请求完毕若没有更多数据时显示的提醒内容；
+                    callback: noMove //必选，刷新函数，根据具体业务来编写，比如通过ajax从服务器获取新数据；
+                }
+            }
+        });
+        getAlarmData();
+
+        function getAlarmData() {
+            $.ajax({
+                url: url + "/app/getAlarm",
+                cache: false,
+                dataType: 'json',
+                data: {
+                    snCode: devSNCode
+                },
+                type: 'POST',
+                beforeSend: function() {
+
+                },
+                success: function(result) {
+                    if (result.code == 0) {
+                        data = result.data;
+                        displayData();
+                    } else {
+                        mui.toast(result.msg);
+                    }
+                },
+                complete: function() {
+
+                },
+                error: function(data) {
+                    console.log(data);
+                    console.info("error: " + data.responseText);
+                }
+            });
+        }
+
+        function displayData() {
+            var strAlarm = "";
+            for (var i in data) {
+                strAlarm += "<li class='mui-table-view-cell mui-collapse li-hook " + showAlarmStatus(data[i].handleStatus) +
+                    "'><a class='mui-navigate-right' href='#'>" + data[i].dataName + "</a><div class='mui-collapse-content'><p class='p-hook' alarmTime = '" +
+                    data[i].alarmTime + "' dataName = '" + data[i].dataName + "'>" +
+                    
+                    "尊敬的" + userName + "您好，您负责的SN码为" + devSNCode + "的设备其" + data[i].dataName + "属性由于" +
+                    data[i].alarmInfo + "正在报警，其实际值为" + data[i].actualValue + "。</br>报警时间为" + data[i].alarmTime + "。请尽快处理！" +
+                     "<div class='pull-right tick-hook' id = 'onlick' ><span class='mui-icon mui-icon-checkmarkempty' ></span></div>" 
+                    "</p></div></li>";
+            }
+            $("#alarmList").empty().append(strAlarm);
+            displayDataFlag = true;
+            mui("onlick").on("tap", ".li-hook", function(e) {
+                alarmTime = $(e.target).parent(".li-hook").find(".tick-hook").attr("alarmTime");
+                dataName = $(e.target).parent(".li-hook").find(".tick-hook").attr("dataName");
+                if ($(e.target).parent(".li-hook").hasClass("unreaded")) removeUnreaded($(e.target).parent(".li-hook"));
+            });
+        }
+
+        function removeUnreaded(dom) {
+            $.ajax({
+                url: url + "/app/updateAlarm",
+                //		        url: "http://127.0.0.1:8081" + "/app/updateAlarm",
+                cache: false,
+                dataType: 'json',
+                data: {
+                    snCode: devSNCode,
+                    alarmTime: alarmTime,
+                    dataName: dataName
+                },
+                type: 'POST',
+                beforeSend: function() {
+
+                },
+                success: function(result) {
+                    if (result.code == 0) {
+                        dom.removeClass("unreaded");
+                    } else {
+                        mui.toast(result.msg);
+                    }
+                },
+                complete: function() {
+
+                },
+                error: function(data) {
+                    console.log(data);
+                    console.info("error: " + data.responseText);
+                }
+            });
+        }
+
+        function showAlarmStatus(status) {
+            if (status === "0") return "unreaded";
+            else return "";
+        }
+
+        function noMove() {}
+
+        mui("body").on("tap", "#refresh", function() {
+            getAlarmData();
+        });
+    </script>
+</body>
+
+</html>

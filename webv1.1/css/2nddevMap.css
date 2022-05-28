@@ -1,0 +1,23 @@
+#devMap-title{
+	width: 100%;
+	height: 50px;
+	border-bottom: 1px solid #D1D3D3;
+}
+
+#devMap-title p{
+	display: inline-block;
+	height: 50px;
+	line-height: 50px;
+	width: 100%;
+	color: #808082;
+	font-size: 110%;
+}
+
+.devMap-body{
+	width: 100%;
+	height: 650px;
+	margin-top: 15px;
+	border-radius: 5px;
+	background-color: #FDFDFF;
+	border: 5px;
+}

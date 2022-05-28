@@ -1,0 +1,277 @@
+<!DOCTYPE>
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<title>亿维自动化物联网云平台用户注册</title>
+<link rel="stylesheet" type="text/css" href="../css/reg.css">
+<script type="text/javascript" src="http://api.map.baidu.com/api?v=2.0&ak=NkMIX99EyeqCnDFTYFm3h1a9WDQXZYWx"></script>
+	<script type="text/javascript" src="../JS/jquery1-1.7.2.min.js" ></script>
+	<script type="text/javascript" src="../JS/jquery.json-2.3.min.js"></script>
+	<script type="text/javascript" src="../MQTT/mqttws31.js" ></script>
+    <script  type="text/javascript" src="../MQTT/config.js"></script>
+</head>
+
+<body>
+	<div class="center public-width" id="main-box">
+		<div id="left-box">
+			<div id="logo">
+				<img src="../img/reg/logo_黑底.png"/>
+			</div>
+			<div id="backgnd-img">
+				<img src="../img/reg/backgnd.png"/>
+			</div>
+		</div>
+		<div id="right-box">
+			<div id="reg-box">
+				<h1 id="reg-title">欢迎注册亿维自动化云平台</h1>
+				<div id="reg-input">
+					<div id="username" class="input-info">
+						<input type="text" name="" id="iUSERNAME" value="" placeholder="用户名" onblur="checkUserName()" /><span id="nameSpan">*6-12字母数字组合</span>
+					</div>
+					<div id="password" class="input-info">
+						<input type="password" name="PASSWORD" id="iPASSWD" value="" placeholder="密码" onblur="checkPwd()" /><span id="pwdSpan">*密码长度必须大于8</span>
+					</div>
+					<div id="verify-password" class="input-info">
+						<input type="password" name="VERIFYPASSWORD" id="iPASSWDV" value="" placeholder="确认密码" onblur="checkPwdConsistency()" /><span id="pwdVerifySpan">*再次输入密码</span>
+					</div>
+					<div id="email" class="input-info">
+						<input type="text" name="EMAIL" id="iEMAIL" value="" placeholder="邮箱" onblur="checkEmailOn()" /><span id="emailSpan">*请输入您的邮箱</span>
+					</div>
+					<div id="phone-number" class="input-info">
+						<input type="text" name="PHOERNUM" id="iPHONE" value="" placeholder="电话号码" onblur="checkMobileOn()" /><span id="phoneSpan">*请输入您的电话号码</span>
+					</div>
+					<div id="company" class="input-info">
+						<input type="text" name="COMPANY" id="iADDRESS" value="" placeholder="公司"/>
+					</div>
+					<div id="indus-type" class="input-info">
+						<input type="text" name="" id="iINDUSTRYTYPE" value="" placeholder="行业类型"/>
+					</div>
+					<div id="reg">
+						<input type="button" id="reg-btn" onclick="Login()" name="" value="注&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp册">
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+</body>
+</html>
+<script type="text/javascript">
+//检查输入内容的合法性
+//定义内容是否符合要求标志
+var usernameFlag=false;
+var PwdFlag=false;
+var PwdVerifyFlag=false;
+var emailFlag=false;
+var phoNumFlag=false;
+//1.检查用户名合法性
+function checkUserName(){
+	var ueridObj=document.getElementById("iUSERNAME");  
+    var userid=trim(ueridObj.value);  
+    var useridRegex= /^\w{6,12}$/;  //正则表达式
+    var msg ="   <img src='../img/reg/对勾.png' style='width:12px'>";  
+    if(!userid)
+    {
+    	 msg ="<font color='red'>*账号不能为空！</font>"; 
+    	 usernameFlag=false; 
+    }   else if(!useridRegex.test(userid)) 
+    {
+    	 msg ="<font color='red'>*用户名格式有误！</font>";
+    	 usernameFlag=false;
+	}else{
+		 msg == "<img src='../img/reg/对勾.png' style='width:12px'>";
+		 usernameFlag=true;
+	}      
+    var span = document.getElementById("nameSpan");  
+    span.innerHTML = msg;  
+    return msg == "<img src='../img/reg/对勾.png' style='width:12px'>";  
+    }  
+    function trim(s){  
+	   return s.replace(/^\s+|\s+$/g,"");  
+	} 
+
+//2.检查密码长度合法性
+function checkPwd(){
+	var pwdObj=document.getElementById("iPASSWD");  
+    var pwd=trim(pwdObj.value);  
+    var pwdRegex= /^\w{6,12}$/;  //正则表达式
+    var msg ="<img src='../img/reg/对勾.png' style='width:12px'>";  
+    if(!pwd) 
+    {
+    	msg ="<font color='red'>密码不能为空！</font>";  
+    	PwdFlag=false;
+    }else if(!pwdRegex.test(pwd))  
+    {
+    	msg ="<font color='red'>密码长度不对！</font>";
+    	PwdFlag=false;  
+    } else{
+    	msg == "<img src='../img/reg/对勾.png' style='width:12px'>";
+    	PwdFlag=true;  
+    } 
+    var span = document.getElementById("pwdSpan");  
+    span.innerHTML = msg;  
+    return msg == "<img src='../img/reg/对勾.png' style='width:12px'>";  
+    }  
+ //3.检查两次密码是否一致(检查密码一致性)
+ function checkPwdConsistency(){
+ 	var pwd=document.getElementById("iPASSWD").value;
+ 	var pwdVerify=document.getElementById("iPASSWDV").value;
+ 	var msg="<img src='../img/reg/对勾.png' style='width:12px'>"; 
+ 	if(pwd==pwdVerify)
+ 	{
+ 		msg ="<img src='../img/reg/对勾.png' style='width:12px'>";
+ 		PwdVerifyFlag=true; 
+ 	}else
+ 	{
+ 		 msg ="<font color='red'>两次输入的密码不同！</font>"; 
+ 		 PwdVerifyFlag=false; 
+ 	}
+	var span = document.getElementById("pwdVerifySpan");  
+	span.innerHTML = msg;  
+	return msg == "<img src='../img/reg/对勾.png' style='width:12px'>";  
+ }
+//4.判断邮箱是否合法
+
+function checkEmailOn(){
+	var email=document.getElementById("iEMAIL").value;
+	var emailCheck=/^(\w-*\.*)+@(\w-?)+(\.\w{2,})+$/;
+	var msg="<img src='../img/reg/对勾.png' style='width:12px'>"; 
+	if(!email)
+	{
+		msg="<font color='red'>邮箱不能为空</font>";
+		emailFlag=false;
+	}else if(!emailCheck.test(email))
+	{
+		msg="<font color='red'>邮箱格式错误</font>";
+		emailFlag=false;	
+	}else
+	{
+		msg ="<img src='../img/reg/对勾.png' style='width:12px'>";
+		emailFlag=true;
+	}
+	var span = document.getElementById("emailSpan");  
+	span.innerHTML = msg;  
+	return msg == "<img src='../img/reg/对勾.png' style='width:12px'>"; 	
+}
+
+//5.检查手机号码是否合法
+function checkMobileOn() {
+  var phoneNumCheck = /^1\d{10}$/;
+  var phoneNum=document.getElementById("iPHONE").value;
+  var msg="<img src='../img/reg/对勾.png' style='width:12px'>"; 
+  if (phoneNumCheck.test(phoneNum)) {
+      msg ="<img src='../img/reg/对勾.png' style='width:12px'>";
+      phoNumFlag=true;
+  } else {
+      msg="<font color='red'>手机号码格式错误</font>";
+      phoNumFlag=false;
+  }
+	var span = document.getElementById("phoneSpan");  
+	span.innerHTML = msg;  
+	return msg == "<img src='../img/reg/对勾.png' style='width:12px'>";
+}
+
+//////////////////////////上面是我的代码，下面是你的/////////////////////////////////////////////
+
+
+
+////检查手机号是否合法
+function checkMobile(str) {
+  var re = /^1\d{10}$/
+  if (re.test(str)) {
+    
+  } else {
+    alert("手机号码格式错误");
+  }
+}
+
+// ////检查邮箱是否合法
+function checkEmail(str){
+  var re = /^(\w-*\.*)+@(\w-?)+(\.\w{2,})+$/
+  if(re.test(str)){
+    
+  }else{
+    alert("邮箱格式错误");
+  }
+}
+
+
+
+function Login()
+{
+var USER_NAME;
+var PASS_WD;
+var PASS_WDV;
+var USER_TYPE;
+var  EMAIL;
+var ADDRESS;
+var PHONE;
+var INDUSTRYTYPE;
+PASS_WD=document.getElementById('iPASSWD').value;
+USER_NAME=document.getElementById('iUSERNAME').value;
+PASS_WDV=document.getElementById('iPASSWDV').value;
+//USER_TYPE=document.getElementById('iUSERTYPE').value;
+EMAIL=document.getElementById('iEMAIL').value;
+ADDRESS=document.getElementById('iADDRESS').value;
+PHONE=document.getElementById('iPHONE').value;
+INDUSTRYTYPE=document.getElementById('iINDUSTRYTYPE').value;
+
+if (!usernameFlag) 
+{
+	alert('用户名格式有误，无法注册');
+}else if(!PwdFlag)
+{
+	alert('原密码有误，无法注册');
+}else if(!PwdVerifyFlag)
+{
+	alert('两次输入的密码不同，无法注册');
+}else if(!emailFlag)
+{
+	alert('邮箱格式错误，无法注册');
+}else if(!phoNumFlag)
+{
+	alert('电话号码格式错误，无法注册');
+}else
+{
+	if(PASS_WD && USER_NAME && PASS_WDV && EMAIL && ADDRESS && PHONE && INDUSTRYTYPE)
+	{
+		if(PASS_WD==PASS_WDV){
+		var re = /^1\d{10}$/
+		if (re.test(PHONE)) {
+		  var re = /^(\w-*\.*)+@(\w-?)+(\.\w{2,})+$/
+		  if(re.test(EMAIL)){
+			$.ajax({
+							type:"POST",
+							url:"./register.php",
+							data: {"USERNAME":USER_NAME,"PASSWD":PASS_WD,"PASSWDV":PASS_WDV,"EMAIL":EMAIL,"ADDRESS":ADDRESS,"PHONE":PHONE,"INDUSTRYTYPE":INDUSTRYTYPE},
+							dataType:"json",
+							async:false,
+							success:function(data)
+							{		
+								if (data.state == 200)
+								{  
+									alert("成功");
+									window.location.href="../index.html";
+								}	
+								else if(data.state == 0) alert("这个用户名已经被使用过");
+								else if(data.state == 1) alert("您两次输入的密码不相同");
+								else if(data.state == 2) alert("注册失败，请重新注册");
+							
+							}
+							});
+				}
+				else alert("邮箱不合法");
+			}
+			else alert("手机号码格式不对");
+		}else alert("两次输入的密码不同");
+	}
+	else {
+	alert("信息不完善");
+	}
+
+}
+
+					
+					
+}
+</script>
+

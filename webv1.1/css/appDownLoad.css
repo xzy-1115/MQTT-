@@ -1,0 +1,88 @@
+.main-box{
+	width:1150px ;
+	height: 700px;
+	margin: 0 auto;
+	margin-top: 50px;
+	background: url(../img/appDownLoad/appDownLoad.png) no-repeat scroll bottom;
+	background-size: 1200px auto;
+}
+
+#app-box{
+	width: 500px;
+	height: 450px;
+	margin-top: 150px;
+	margin-left: 150px;
+	background-color: #D1D3D3;
+	float: left;
+}
+
+#app-box h1{
+	display: inline-block;
+	width: 100%;
+	height: 100px;
+	line-height: 100px;
+	text-align: center;
+ 	font-size: 200%;
+ 	font-weight: 100;
+ 	letter-spacing: 2px;
+}
+#p-s{
+	display: inline-block;
+	width: 100%;
+	height: 20px;
+	line-height: 20px;
+	margin-bottom: 20px;
+ 	font-size: 12px;
+ 	color: red;
+ 	text-align: center;
+ 	/*font-weight: 100;
+ 	letter-spacing: 2px;*/
+}
+
+#android{
+	display: inline-block;
+	width: 190px;
+	height: 50px;
+	line-height: 50px;
+	margin-left: 40px;
+	/*text-align: center;*/
+	background: url(../img/appDownLoad/app-android.png) no-repeat #fff;
+	background-position-x: 20px;
+	background-position-y: center;
+	color: #363640;
+	
+}
+#download-href p{
+	margin-left: 70px;
+	text-align: center;
+	width: 80px;
+}
+
+
+#iphone{
+	display: inline-block;
+	width: 190px;
+	height: 50px;
+	line-height: 50px;
+	margin-left: 36px;
+	background: url(../img/appDownLoad/app-iphone.png) no-repeat #fff;
+	background-position-x: 20px;
+	background-position-y: center;
+	color: #363640;
+}
+
+.QRcode{
+	width: 190px;
+	height: 190px;
+	margin-left: 40px;
+	margin-top: 20px;
+	background-color: white;
+	float: left;
+}
+
+/*#qr_container{
+	width: 190px;
+	height: 190px;
+	background-color: white;
+	
+}*/

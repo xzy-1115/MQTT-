@@ -1,0 +1,117 @@
+mysql -u root -p
+ use device;
+ show tables;
+
+
+系统管理员
+INSERT INTO use_login (UserName,Password,Role,Company,Phone,Email,Address,IndustyType,Name) VALUES ("hubu","123",1,"湖北大学","15927633823","2388684549@qq.com","湖北省武汉市","1","汪立东");
+ 
+ 
+/123/DevSend/ThresoldAck 123_woqu
+/123/runtime/on  woqu_qw_10_sd_12_s_15
+/sys/reg  dev1_123456_test1
+设备注册
+/sys/reg  123_123456  
+
+协议适配
+/sn/DevSend/cfg/ack		    yiwei_温度_℃_3_1_1_0_100_湿度_%_3_1_1_0_100_PH_F_3_1_1_0_10_压力_N_3_1_1_0_100_风力_N_3_1_1_0_100
+
+实时数据
+/sn/DevSend/runtime/on		协议_字段1_数1_字段2_数2_.....
+
+报警配置
+/sn/DevRecv/ThresoldReq      sn_协议号
+/sn/DevSend/ThresoldAck     123_yiwei_5_2_10_0_30_20_0_1_7_3_3_2_1_4_3_10_7_1_30_2
+		 
+服务器报警
+/sys/Alarm  123_yiwei_1_11_10_0_报警级别1
+
+
+Update device_protocol  set UseFlag ='0' where SN ='123' and Protocol = 'woqu' ;
+Update device_protocol  set UseFlag ='0' where SN =’123’ ;
+在原先的表中添加新的字段，数据类型。。
+ALTER TABLE 表名 ADD 新字段名 数据类型
+删除主键
+alter table products drop primary key;
+增加双主键
+alter table tb_name add primary key (字段1,字段2,字段3); 
+删除字段
+ALTER TABLE table_name DROP field_name;
+新增字段
+alter table table1 add transactor varchar(10);
+Update device_alarm_detail set Min ='7' , Max ='8' , AlaCode ='abc' where Protocol='woqu' and SN ='123' and Offset = '1' and AlaOffset= '1' ;
+//修改字段类型
+ALTER TABLE device_alarm_show MODIFY COLUMN id VARCHAR(255);  
+备份数据库
+mysqldump -uroot device > device.sql
+desc dev_verify;
+desc device;
+desc device_alarm_detail;
+desc device_alarm_show;
+desc device_data_save;
+desc device_online_list;
+desc device_protocol;
+desc device_status;
+desc protocol_detail;
+desc protocol_master;
+desc realtime_rules;
+desc user_device;
+desc user_info;
+desc use_login;
+desc user_bind;
+
+
+
+ //加单位,格式，可读，可写
+//建立格式代码表
+		id type			fomat
+		1	bool         1
+		2	int           2 
+		3	int           4
+		4	float        1 
+		5	float        2
+		6	float        3
+		7	float        4
+
+
+select Data , count(*) AS count from device_data_save group by Data order by count DESC ;		
+		
+select * from dev_verify;
+select * from device;
+select * from device_alarm_detail;
+select * from device_alarm_show;
+select * from device_data_save;
+select * from device_online_list;
+select * from device_protocol;
+select * from protocol_detail;
+select * from protocol_master;
+select * from realtime_rules;
+select * from log;                 
+select * from oa_list;
+select * from qa_list;
+select * from use_login;
+select * from user_bind;
+select * from user_device;
+
+insert into device_alarm_detail(SN,Protocol,Offset,Max,Min,AlaCode)values(123,'woqu',1,3,9,'abc');
+insert into device_alarm_detail(SN,Protocol,Offset,Max,Min,AlaCode)values(123,'woqu',2,10,11,'fgh');
+insert into device_alarm_detail(SN,Protocol,Offset,Max,Min,AlaCode)values(123,'woqu',3,13,20,'mnb');
+insert into device_alarm_show (SN,Protocol,Offset,Time,Max,Min,ActVar,AlaCode)values('123','woqu','2',NOW(),'82','70','75','abc');
+
+truncate table dev_verify;
+truncate table device;
+truncate table device_alarm_detail;
+truncate table device_alarm_show;
+truncate table device_data_save;
+truncate table device_online_list;
+truncate table device_protocol;
+truncate table log;                 
+truncate table oa_list;
+truncate table qa_list;  
+truncate table protocol_detail;
+truncate table protocol_master;
+truncate table realtime_rules;
+truncate table use_login;
+truncate table user_bind;
+truncate table user_device;
+

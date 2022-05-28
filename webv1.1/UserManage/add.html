@@ -1,0 +1,63 @@
+﻿<!DOCTYPE html>
+<html>
+<head> 
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" /> 
+<!--<meta http-equiv="Content-Type" content="text/html; charset=gb2312">-->
+</head>
+<?php
+$user3namestr=$_GET['user3str'];
+?>
+<body>
+<div class="fanbox">
+    <h3>新增设备</h3>
+    <form id="add_form" action="do.php?action=adddev" method="post">
+        <table width="100%" cellpadding="0" cellspacing="0" class="post_table">
+             <tr>
+                <td width="30%" align="right">绑定客户客户：</td>
+                <td><input type="text" class="input2" name="user3name"  value=<?php echo $user3namestr?> maxlength="30" /></td>
+            </tr
+			<tr>
+                <td width="30%" align="right">设备SN号：</td>
+                <td><input type="text" class="input2" name="username" maxlength="30" /></td>
+            </tr>
+            <tr>
+                <td align="right">6位验证码：</td>
+                <td><input type="text" class="input2" name="passwd" maxlength="10" /></td>
+            </tr>
+            <tr>
+                <td height="60">&nbsp;</td>
+                <td><input type="submit" class="btn" value="提交"/> <input type="button" class="btn" value="取消" onclick="$.fancybox.close();" /></td>
+            </tr>
+        </table>
+    </form>
+</div>
+</body>
+</html>
+<script type="text/javascript" src="js/jquery.form.js"></script>
+<script type="text/javascript">
+                    $(function() {
+                        $('#add_form').ajaxForm({
+                            beforeSubmit: validate,
+                            success: function(msg) {
+                                if (msg == 1) {
+                                    $.fancybox.close();
+                                    $().message("成功添加");
+                                    jQuery("#list").jqGrid( 'setGridParam', { url : 'do.php?action=list', page : 1 }).trigger("reloadGrid");
+                                } else {
+                                    alert(msg);
+                                }
+                            }
+                        });
+                    });
+                    function validate(formData, jqForm, options){
+                        for (var i = 0; i < formData.length; i++) {
+                            if (!formData[i].value) {
+                                $().message("请输入完整相关信息");
+                                return false;
+                            }
+                        }
+                        $().message("正在提交...");
+                    }
+					
+
+</script>

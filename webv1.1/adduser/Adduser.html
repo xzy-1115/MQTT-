@@ -1,0 +1,428 @@
+﻿<html>
+<head>
+	<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+	<title>添加客户</title>
+	<link rel="stylesheet" type="text/css" href="../css/common.css">
+	<link rel="stylesheet" type="text/css" href="../css/2ndnewUser.css">
+	<script type="text/javascript" src="http://api.map.baidu.com/api?v=2.0&ak=NkMIX99EyeqCnDFTYFm3h1a9WDQXZYWx"></script>
+	<script type="text/javascript" src="../JS/jquery1-1.7.2.min.js" ></script>
+	<script type="text/javascript" src="../JS/jquery.json-2.3.min.js"></script>
+	<script type="text/javascript" src="../MQTT/mqttws31.js" ></script>
+    <script  type="text/javascript" src="../MQTT/config.js"></script>
+</head>
+<?php 
+	session_start(); 
+	if($_SESSION['UserName'])
+	$tempstr=1;
+	//$tempstr=0;
+	else $tempstr=0;
+?>
+<body>
+	<div class="center public-width" id="container">
+		<div id="left">
+			<div id="logo">
+				<img src="../img/common/logo_黑底.png"/>
+			</div>
+			<div id="menu-box">
+				<ul id="menu">
+					<!--管理员菜单-->
+					<?php
+						session_start();
+						include_once ("../connect.php");
+						$result = mysql_query("SELECT * FROM use_login WHERE UserName ='".$_SESSION['UserName']."'  ");
+						$row = mysql_fetch_array($result, MYSQL_ASSOC);
+						$count = $row['Role'];
+						if($count==1){
+					?>
+					<li><a id="userMap" href="../UserMap/user_map.html">客户地图</a></li>
+					<li><a class="devMap" href="../DevMap_admin/devMap_admin.html">设备地图</a></li>
+					<li><a class="search" href="../searchInfo/searchInfo.html">信息搜索</a></li>
+					<li><a id="saleRank" href="../rank/rank.html">销售排名</a></li>
+					<li><a class="userLogs" href="../logmanage/infor.html">客户日志</a></li>
+					<li><a class="modifyInfo" href="../infocompli/changeAdminInfor.html">修改管理员信息</a></li>
+					<li><a class="appDownLoad" href="../QRcode/appDownLoad.html">移动APP下载</a></li>
+					<!--
+                    	作者：1763257419@qq.com
+                    	时间：2018-03-30
+                    	描述：二级客户菜单
+                    -->
+                	<?php
+				   		 }else if($count==2){
+				    ?>
+                     <li><a id="addUser" href="../UserManage/UserManage.html">添加客户</a></li>
+                    <li><a id="addDev" href="../Adddevice/index.html">添加设备</a></li>
+                    <li><a class="devMap" href="../DevMap/dev_map.html">设备地图</a></li>
+                    <li><a class="devList" href="../devlist/index_devlist.html">设备列表</a></li>
+                    <li><a class="modifyInfo" href="../infocompli/infor.html">修改客户信息</a></li>
+                    <li><a class="userLogs" href="../logmanage/infor.html">客户日志</a></li>
+                    <li><a class="appDownLoad" href="../QRcode/appDownLoad.html">移动APP下载</a></li>
+                    <li><a class="QA" href="../QA/news.html">客户问题跟踪</a></li>
+                    <li><a class="feedback" href="../OA/index.html">客户信息反馈</a></li>
+                    <!--
+                    	作者：1763257419@qq.com
+                    	时间：2018-03-30
+                    	描述：三级客户菜单
+                    -->
+                	<?php
+					    }else if($count==3){
+					?>
+					<li><a class="devMap" href="../DevMap/dev_map.html">设备地图</a></li>
+                    <li><a class="devList" href="../devlist/index_devlist.html">设备列表</a></li>
+                    <li><a class="modifyInfo" href="../infocompli/infor.html">修改客户信息</a></li>
+                    <li><a class="userLogs" href="../logmanage/infor.html">客户日志</a></li>
+                    <li><a class="appDownLoad" href="../QRcode/appDownLoad.html">移动APP下载</a></li>
+					<li><a class="QA" href="../QA/news.html">客户问题跟踪</a></li>
+                    <li><a class="devInfoFeedBack" href="../devInfoFeedBack/devInfoFeedBack.html">设备信息反馈</a></li>
+                    <?php
+				    	}
+				    ?>
+				</ul>
+			</div>
+		</div>
+		<div id="right">
+			<div id="title">
+				<div id="list-icon">
+					<a href="../UserManage/UserManage.html"><img src="../img/common/list-title.png"/></a>
+				</div>
+				<h1>亿维自动化物联网云平台</h1>
+				<div id="userinfo-box">
+					<div id="head-icon">
+						<a href="../main.html"><img src="../img/common/驯鹿.png"/></a>
+					</div>
+					<div id="user-info">
+						<li class="list" id="user-name">
+							<?php echo $_SESSION['UserName'];?>
+							<ul>
+								<li class="list"><a id="out" href="../exit.php">退出登录</a></li>
+							</ul>
+						</li>
+					</div>
+				</div>
+			</div>
+			<div id="main-box">
+				<div id="newUser-title" class="title">
+					<p>添加客户信息</p>
+				</div>
+				<div id="newUser-body">
+					<div id="input-box">
+						<div class="input-info">
+							<p>登录名</p>&nbsp&nbsp<input type="text" name="loginName" id="UserName" placeholder="&nbsp&nbsp登录名"  onchange="checkvalid()"/>
+						</div>
+						<div class="input-info">
+							<p>真实姓名</p>&nbsp&nbsp<input type="text" id="Name" value=""  onchange="check()" placeholder="&nbsp&nbsp真实姓名" />
+						</div>
+						<div class="input-info">
+							<p>邮箱</p>&nbsp&nbsp<input type="text" id="Email" value=""  onchange="check()" placeholder="&nbsp&nbsp邮箱" />
+						</div>
+						<div class="input-info">
+							<p>联系电话</p>&nbsp&nbsp<input type="text" id="Phone" value=""  onchange="check()" placeholder="&nbsp&nbsp联系电话" />
+						</div>
+						<div class="input-info">
+							<p>公司名称</p>&nbsp&nbsp<input type="text" id="Company" value=""  onchange="check()" placeholder="&nbsp&nbsp公司名称" />
+						</div>
+						<div class="input-info">
+							<p id="indus-type">行业类型</p>&nbsp
+							<select name="" id="iLocalType">
+								<option value="0">智能车库</option>
+								<option value="1">农业大棚</option>
+								<option value="2">温控系统</option>
+								<option value="3">暖通行业</option>
+								<option value="4">塑胶机械</option>
+								<option value="5">纺织机械</option>
+								<option value="6">矿山机械</option>
+								<option value="7">冶金行业</option>
+								<option value="8">电力行业</option>
+								<option value="9">石化行业</option>
+								<option value="10">建材行业</option>
+								<option value="11">汽车制造</option>
+								<option value="12">包装机械</option>
+								<option value="13">电子设备</option>
+								<option value="14">水处理</option>
+								<option value="15">仿真设备</option>
+								<option value="16">养殖行业</option>
+								<option value="17">冷库行业</option>
+								<option value="18">消防设备</option>
+								<option value="19">环保行业</option>
+								<option value="20">医药行业</option>
+								<option value="21">轨道交通行业</option>
+								<option value="22">核电行业</option>
+							</select>
+						</div>
+						<div class="input-info">
+							<p>地址</p>&nbsp&nbsp<input type="text" id="Addr" value="" onchange="check()" placeholder="&nbsp&nbsp点击地图获取地址" />
+							<input type="hidden" id="OpType" name ="OpType" />
+							<input type="hidden" id="lng" /><input type="hidden" id="lat" />
+						</div>
+						<div class="input-info" id="submit">
+							<a href="#" id="UserREG" onclick="User_REG()">注册客户</a>	
+						</div>
+					</div>
+					<div id="allmap">
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+</body>
+</html>
+
+<script type="text/javascript">
+ var teststr=<?php echo $tempstr;?>;
+if(teststr==0)
+{
+window.location.href="../index.html";
+}
+// 退出登录的下拉效果
+	$(function(){
+		$('.list').hover(function(){
+			$(this).children('ul').stop().slideDown('fast');
+		},function(){
+			$(this).children('ul').stop().slideUp('fast');
+		});
+	});
+
+
+//、、、、、、、、、、
+//需要传入客户的ID信息
+//、、、、、、、、、、
+//
+var valid_flag=0;
+	var map ;
+	var geoc;
+	var myValue;
+$(document).ready(function() {
+   // document.getElementById("UserREG").disabled=true;
+ 
+		BaiduMapInit();
+	
+    });
+
+	
+///////////////////百度地图//////////////////////////////
+	// 百度地图API功能
+		
+	function BaiduMapInit(e){
+	//var map = new BMap.Map("allmap");						//初始化地图
+	map = new BMap.Map("allmap",{enableMapClick:false}); 
+	map.clearOverlays();									// 清除已有标注
+	var point = new BMap.Point(116.331398,39.897445);		//定位中心
+	map.centerAndZoom(point,12);
+	geoc = new BMap.Geocoder();  						//地址逆向解析用
+	map.addEventListener("click", showInfo);				//点击标注事件
+	map.enableScrollWheelZoom();   							//启用滚轮放大缩小，默认禁用
+	map.enableContinuousZoom();    							//启用地图惯性拖拽，默认禁用
+	var geolocation = new BMap.Geolocation();				//获取浏览器地址用
+	geolocation.getCurrentPosition(BrouseAddr,{enableHighAccuracy: true})
+	
+	var ac = new BMap.Autocomplete(    //建立一个自动完成的对象
+	{"input" : "Addr"
+	,"location" : map
+	});
+	
+	ac.addEventListener("onhighlight", function(e) {  //鼠标放在下拉列表上的事件
+	var str = "";
+		var _value = e.fromitem.value;
+		var value = "";
+		if (e.fromitem.index > -1) {
+			value = _value.province +  _value.city +  _value.district +  _value.street +  _value.business;
+		}    
+		str = "FromItem<br />index = " + e.fromitem.index + "<br />value = " + value;
+		
+		value = "";
+		if (e.toitem.index > -1) {
+			_value = e.toitem.value;
+			value = _value.province +  _value.city +  _value.district +  _value.street +  _value.business;
+		}    
+		str += "<br />ToItem<br />index = " + e.toitem.index + "<br />value = " + value;
+		G("searchResultPanel").innerHTML = str;
+	});
+
+
+	ac.addEventListener("onconfirm", function(e) {    //鼠标点击下拉列表后的事件
+	var _value = e.item.value;
+		myValue = _value.province +  _value.city +  _value.district +  _value.street +  _value.business;
+		G("searchResultPanel").innerHTML ="onconfirm<br />index = " + e.item.index + "<br />myValue = " + myValue;
+		
+		setPlace();
+	});
+	}
+	function G(id) {
+		return document.getElementById(id);
+	}
+
+	function setPlace(){
+		map.clearOverlays();    //清除地图上所有覆盖物
+		function myFun(){
+			var pp = local.getResults().getPoi(0).point;    //获取第一个智能搜索的结果
+			map.centerAndZoom(pp, 18);
+			map.addOverlay(new BMap.Marker(pp));    //添加标注
+		}
+		var local = new BMap.LocalSearch(map, { //智能搜索
+		  onSearchComplete: myFun
+		});
+		local.search(myValue);
+	}
+	
+	//浏览器默认地址
+	function BrouseAddr(r){
+		if(this.getStatus() == BMAP_STATUS_SUCCESS){
+			var mk = new BMap.Marker(r.point);
+			map.addOverlay(mk);								//全景场景内添加覆盖物
+			map.panTo(r.point);								//将地图的中心点更改为给定的点
+			//alert('您的位置：'+r.point.lng+','+r.point.lat);
+		}
+		else {
+			alert('failed'+this.getStatus());
+		}        
+	}
+	//关于状态码
+	//BMAP_STATUS_SUCCESS	检索成功。对应数值“0”。
+	//BMAP_STATUS_CITY_LIST	城市列表。对应数值“1”。
+	//BMAP_STATUS_UNKNOWN_LOCATION	位置结果未知。对应数值“2”。
+	//BMAP_STATUS_UNKNOWN_ROUTE	导航结果未知。对应数值“3”。
+	//BMAP_STATUS_INVALID_KEY	非法密钥。对应数值“4”。
+	//BMAP_STATUS_INVALID_REQUEST	非法请求。对应数值“5”。
+	//BMAP_STATUS_PERMISSION_DENIED	没有权限。对应数值“6”。(自 1.1 新增)
+	//BMAP_STATUS_SERVICE_UNAVAILABLE	服务不可用。对应数值“7”。(自 1.1 新增)
+	//BMAP_STATUS_TIMEOUT	超时。对应数值“8”。(自 1.1 新增)
+	
+	function showInfo(e){
+	
+	//var myIcon = new BMap.Icon("http://lbsyun.baidu.com/jsdemo/img/fox.gif", new BMap.Size(300,157));
+	
+		var lpoint = new BMap.Point(e.point.lng,  e.point.lat);  	// 创建点坐标  
+		//var marker = new BMap.Marker(lpoint,{icon:myIcon});        				// 创建标注   
+		var marker = new BMap.Marker(lpoint);        				// 创建标注   
+		map.clearOverlays();										// 清除已有标注
+		map.addOverlay(marker);                     				// 将标注添加到地图中
+		marker.setAnimation(BMAP_ANIMATION_BOUNCE); 				// 跳动的动画
+		
+		geoc.getLocation(lpoint, ShowAddr);  
+		document.getElementById('lng').value=e.point.lng;	
+		document.getElementById('lat').value=e.point.lat;			
+	}
+	
+	function ShowAddr(rs)
+	{
+		var addComp = rs.addressComponents;
+		document.getElementById('Addr').value=addComp.province + ", " + addComp.city + ", " + addComp.district + ", " + addComp.street + ", " + addComp.streetNumber;
+	}
+////////////////////////////////////////////
+	
+function check()
+{ 
+	if(document.getElementById('UserName').value && document.getElementById('Name').value && document.getElementById('Email').value && document.getElementById('Company').value && document.getElementById('Phone').value && document.getElementById('Addr').value)
+	{
+		//document.getElementById("UserREG").disabled=false;
+	}
+	else {
+	//document.getElementById("UserREG").disabled=true;
+	}
+}
+function checkvalid()
+{
+$.ajax({
+					type:"POST",
+					url:"find.php",
+					data: {"username":document.getElementById('UserName').value
+					},
+					dataType:"json",
+					async:false,
+					success:function(data)
+					{		
+						if (data.state == 200)
+						{  
+						valid_flag=1;
+						}	
+						else {
+						//document.getElementById("UserREG").disabled=true;
+						valid_flag=0;alert("此客户名已被注册"); 
+						}
+					}
+					});		
+}
+function User_REG()
+{//UserName-Name-Email-Company-Phone-Addr
+	if(document.getElementById('UserName').value && document.getElementById('Name').value && document.getElementById('Email').value && document.getElementById('Company').value && document.getElementById('Phone').value && document.getElementById('Addr').value)
+	{
+
+			//document.getElementById("UserREG").disabled=false;
+			checkvalid();
+			if(valid_flag){
+			///
+			var strUserName = document.getElementById('UserName').value;
+			var strName = document.getElementById('Name').value;
+			var strEmail = document.getElementById('Email').value;
+			var strCompany = document.getElementById('Company').value;
+			var strPhone = document.getElementById('Phone').value;
+			var strAddr = document.getElementById('Addr').value;
+			var strLng = document.getElementById('lng').value;	
+			var strLat = document.getElementById('lat').value;	
+			var strLocalType = document.getElementById('iLocalType').value;
+			///
+			var re = /^(\w-*\.*)+@(\w-?)+(\.\w{2,})+$/
+			if(re.test(strEmail)){
+			var re = /^1\d{10}$/
+			if (re.test(strPhone)) {
+			
+			$.ajax({
+						type:"POST",
+						url:"./sendMail/sendmail.php",
+						data: {"strUserName":strUserName,
+						"strName":strName,
+						"strEmail":strEmail,
+						"strCompany":strCompany,
+						"strPhone":strPhone,
+						"strAddr":strAddr,
+						"Lng":strLng,
+						"Lat":strLat,
+						"LocalType":strLocalType},
+						dataType:"json",
+						async:false,
+						success:function(data)
+						{		
+							if (data.state == 200)
+							{  
+								alert("注册成功！");
+								window.location.href="../UserManage/UserManage.html";
+							}	
+							
+							else {alert("注册失败！");window.location.href="../UserManage/UserManage.html"; }
+						}
+						});		
+					}else alert("请填写正确的手机号码");
+				}else alert("请填写正确的邮箱");
+		     }
+	}
+	else 
+	{
+		//document.getElementById("UserREG").disabled=true;
+		alert("您还有信息没有填写");
+	}
+}
+///////关闭页面
+var clientX = 0;
+var clientY = 0;
+
+window.onmousedown = function (event) {
+      event = event || window.event;
+      clientX = event.clientX;
+      clientY = event.clientY;
+}
+
+window.onbeforeunload = function () {
+if( clientY < 20){
+	$.ajax({
+	type:"POST",
+	url:"../cleansession.php",
+	data: {"clean":"退出登录"},
+	dataType:"json",
+	async:false,
+	success:function(data)
+	{						
+	}
+	});	
+}
+};
+
+</script>

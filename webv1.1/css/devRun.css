@@ -1,0 +1,74 @@
+#devRun-body{
+	width: 1050px;
+	height: 700px;
+	background-color: #fff;
+	border-radius: 5px;
+	margin-top: 20px;
+}
+
+#devRun-title a{
+	display: inline-block;
+	width: 100px;
+	height: 30px;
+	line-height: 30px;
+	border-radius: 5px;
+	border:1px solid #EA6100;
+	text-align: center;
+	color: #EA6100;
+	background-color: #fff;
+}
+
+#devRun-title a:hover{
+	background-color: #EA6100;
+	color: #fff;
+}
+
+
+#devRun-title #decRun{
+	background-color: #EA6100;
+	color: #fff;
+}
+
+
+#devRun-title p{
+	width: 200px;
+	height: 30px;
+	line-height: 30px;
+	float: right;
+	font-size: 25px;
+	color: #EA6100;
+}
+
+#SN{
+	width: 150px;
+	height: 30px;
+	line-height: 30px;
+	border:none; 
+	font-size: 20px;
+	color: dodgerblue;
+	background-color: #F6F7F9;
+}
+
+#devRunData-title{
+	position: relative;
+	top: 30px;
+	width: 900px;
+	margin-left: 75px;
+	height: 32px;
+	border-bottom: 1px solid #EA6100;
+
+}
+
+#devRun-body p{
+	display: inline-block;
+	width: 10%;
+	margin-left: 5%;
+	height: 30px;
+	line-height: 30px;
+	float: left;
+	/*border-radius: 5px;*/
+	/*border:1px solid #EA6100;*/
+	border:none;
+	text-align: center;
+	color: #EA6100;
+}

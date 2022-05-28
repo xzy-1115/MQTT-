@@ -1,0 +1,106 @@
+#devlist-title{
+	width: 100%;
+	height: 50px;
+	border-bottom: 1px solid #D1D3D3;
+}
+#devlist-title p{
+	display: inline-block;
+	height: 50px;
+	line-height: 50px;
+	width: 100%;
+	color: #808082;
+	font-size: 110%;
+}
+
+
+#devlist-body{
+	width: 100%;
+	height: 650px;
+	margin-top: 15px;
+	border-radius: 5px;
+	background-color: #F6F7F9;
+}
+
+.devlist{
+	height: 120px;
+	width: 100%;
+	background-color: #fff;
+	margin-top: 20px;
+	border-radius: 5px;
+	border: 2px solid #fff;
+}
+
+.devlist:hover{
+	box-shadow:0 15px 30px rgba(0,0,0,0.1);
+	transform: translate3d(0,-2px,0);/*位移，3d效果 朝上方移动2像素*/
+	transition: all 0.2s linear;/*动画，0,2秒过度，匀速*/
+}
+
+.devType{
+	height: 100px;
+	width: 150px;
+	margin-top: 10px;
+	float: left;
+	margin-left: 10px;
+	border: 1px solid dodgerblue;
+}
+.devType img{
+	height: 100px;
+	width: 150px;	
+}
+
+.devInfo{
+	height: 100px;
+	width: 800px;
+	padding-top:10px;
+	float: left;
+}
+
+.devTitle{
+	width: 800px;
+	height: 40px;
+}
+.devTitle p{
+	display: inline-block;
+	width: 200px;
+	height: 40px;
+	line-height: 40px;
+	text-align: center;
+	float: left;
+	color: #EA6100;
+}
+
+.devOption{
+	width: 900px;
+	height: 60px;
+}
+.devOption a{
+	display: inline-block;
+	width: 120px;
+	margin-left: 10px;
+	height: 60px;
+	line-height: 60px;
+}
+
+.devOption p{
+	margin-left: 50px;
+	color: dodgerblue;
+}
+.basicCfg{
+	background: url(../img/3rdUser/3rddevList/设置.png) no-repeat scroll 10px center;
+}
+.alarmCfg{
+	background: url(../img/3rdUser/3rddevList/实时报警.png) no-repeat scroll 10px center;
+}
+
+.alarmInfo{
+	background: url(../img/3rdUser/3rddevList/信息.png) no-repeat scroll 10px center;
+}
+
+.currentData{
+	background: url(../img/3rdUser/3rddevList/信息.png) no-repeat scroll 10px center;
+}
+
+.historyData{
+	background: url(../img/3rdUser/3rddevList/历史记录.png) no-repeat scroll 10px center;
+}

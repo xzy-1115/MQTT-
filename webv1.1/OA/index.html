@@ -1,0 +1,246 @@
+<html>
+<head>
+	<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+	<title>OA</title>
+	<link rel="stylesheet" type="text/css" href="../css/common.css">
+	<link rel="stylesheet" type="text/css" href="../css/OA.css">
+	<!-- 引用jQuery -->  
+	<script type="text/javascript" src="./Comm/js/jquery-1.7.2.min.js"></script>  
+		<!-- 引用jQueryUI的start主题 -->  
+
+	<link rel="stylesheet" type="text/css" href="css/ui-lightness/jquery-ui-1.8.2.custom.css" />
+    <link rel="stylesheet" type="text/css" href="css/ui.jqgrid.css" />
+    <link rel="stylesheet" type="text/css" href="css/fancybox.css" />
+	<script type="text/javascript" src="../JS/jquery.json-2.3.min.js"></script>
+	<script type="text/javascript" src="http://www.sucaihuo.com/Public/js/other/jquery.js"></script> 
+    <script src="js/i18n/grid.locale-cn.js" type="text/javascript"></script>
+    <script src="js/jquery.jqGrid.min.js" type="text/javascript"></script>
+    <script src="js/jquery.fancybox.js" type="text/javascript"></script>
+    <script src="js/jquery.message.js" type="text/javascript"></script>
+</head>
+
+ <?php 
+	session_start(); 
+	if($_SESSION['UserName'])
+	$tempstr=1;
+	//$tempstr=0;
+	else $tempstr=0;
+?>
+ 
+
+<body>  
+	<div class="center public-width" id="container">
+		<div id="left">
+			<div id="logo" style="width: 150px;height: 50px;margin-left: 30px;margin-right: auto;">
+				<img src="../img/common/logo_黑底.png"/>
+			</div>
+			<div id="menu-box">
+				<ul id="menu">
+					<!--管理员菜单-->
+					<?php
+						session_start();
+						include_once ("../connect.php");
+						$result = mysql_query("SELECT * FROM use_login WHERE UserName ='".$_SESSION['UserName']."'  ");
+						$row = mysql_fetch_array($result, MYSQL_ASSOC);
+						$count = $row['Role'];
+						if($count==1){
+					?>
+					<li><a id="userMap" href="../UserMap/user_map.html">客户地图</a></li>
+					<li><a class="devMap" href="../DevMap_admin/devMap_admin.html">设备地图</a></li>
+					<li><a class="search" href="../searchInfo/searchInfo.html">信息搜索</a></li>
+					<li><a id="saleRank" href="../rank/rank.html">销售排名</a></li>
+					<li><a class="userLogs" href="../logmanage/infor.html">客户日志</a></li>
+					<li><a class="modifyInfo" href="../infocompli/changeAdminInfor.html">修改管理员信息</a></li>
+					<li><a class="appDownLoad" href="../QRcode/appDownLoad.html">移动APP下载</a></li>
+					<!--
+                    	作者：1763257419@qq.com
+                    	时间：2018-03-30
+                    	描述：二级客户菜单
+                    -->
+                	<?php
+				   		 }else if($count==2){
+				    ?>
+                    <li><a id="addUser" href="../UserManage/UserManage.html">添加客户</a></li>
+                    <li><a id="addDev" href="../Adddevice/index.html">添加设备</a></li>
+                    <li><a class="devMap" href="../DevMap/dev_map.html">设备地图</a></li>
+                    <li><a class="devList" href="../devlist/index_devlist.html">设备列表</a></li>
+                    <li><a class="modifyInfo" href="../infocompli/infor.html">修改客户信息</a></li>
+                    <li><a class="userLogs" href="../logmanage/infor.html">客户日志</a></li>
+                    <li><a class="appDownLoad" href="../QRcode/appDownLoad.html">移动APP下载</a></li>
+                    <li><a class="QA" href="../QA/news.html">客户问题跟踪</a></li>
+                    <li><a class="feedback" href="../OA/index.html">客户信息反馈</a></li>
+                    <!--
+                    	作者：1763257419@qq.com
+                    	时间：2018-03-30
+                    	描述：三级客户菜单
+                    -->
+                	<?php
+					    }else if($count==3){
+					?>
+					<li><a class="devMap" href="../DevMap/dev_map.html">设备地图</a></li>
+                    <li><a class="devList" href="../devlist/index_devlist.html">设备列表</a></li>
+                    <li><a class="modifyInfo" href="../infocompli/infor.html">修改客户信息</a></li>
+                    <li><a class="userLogs" href="../logmanage/infor.html">客户日志</a></li>
+                    <li><a class="appDownLoad" href="../QRcode/appDownLoad.html">移动APP下载</a></li>
+					<li><a class="QA" href="../QA/news.html">客户问题跟踪</a></li>
+                    <li><a class="devInfoFeedBack" href="../devInfoFeedBack/devInfoFeedBack.html">设备信息反馈</a></li>
+                    <?php
+				    	}
+				    ?>
+				</ul>
+			</div>
+		</div>
+		<div id="right">
+			<div id="title">
+				<div id="list-icon">
+					<a href="../main.html"><img src="../img/common/list-title.png"/></a>
+				</div>
+				<h1>亿维自动化物联网云平台</h1>
+				<div id="userinfo-box">
+					<div id="head-icon">
+						<a href="../main.html"><img src="../img/common/驯鹿.png"/></a>
+					</div>
+					<div id="user-info">
+						<li class="list" id="user-name">
+							<?php echo $_SESSION['UserName'];?>
+							<ul>
+								<li class="list"><a id="out" href="../exit.php">退出登录</a></li>
+							</ul>
+						</li>
+					</div>
+				</div>
+			</div>
+			<div id="main-box">
+				<div id="devAlarm-title" class="title">
+					<p>客户信息反馈</p>
+				</div>
+				<div id="feedback-body">
+					<div class="grid_table" >
+						<table id="list1"></table>  
+						
+					</div>
+				</div>
+			</div>
+	</div>	
+	
+</body>  
+</html>  
+
+<script type="text/javascript">
+ var teststr=<?php echo $tempstr;?>;
+if(teststr==0)
+{
+window.location.href="../index.html";
+}
+$(function(){
+	$('.list').hover(function(){
+		$(this).children('ul').stop().slideDown('fast');
+	},function(){
+		$(this).children('ul').stop().slideUp('fast');
+	});
+});
+
+
+
+
+ var lastsel;
+
+
+var offset_num;
+var protocolstr=0;
+
+
+
+$(document).ready(function() {
+
+	jQuery("#list1").jqGrid({  
+						// 请求后台json数据的url  
+						url:'data1.php',  
+						// 后台返回的数据格式  
+						datatype: "json",  
+						// 列表标题  
+						colNames: ['客户名', '时间','设备SN号','具体问题'], //数据列名称（数组）
+						colModel: [//数据列各参数信息设置
+						    {name: 'User', index: 'User',  width: 40, align: 'center', title: false},
+							{name: 'Rank', index: 'Rank',  width: 70, align: 'center', title: false},
+							{name: 'DevType', index: 'DevType', width: 40, title: false, align: 'center'},
+							{name: 'Sum', index: 'Sum', width: 200, title: false, align: 'center',editable : true}
+						],
+						autowidth: true, //自动匹配宽度
+						height: 450, //设置高度
+						gridview: true, //加速显示
+						viewrecords: true, //显示总记录数
+						rowNum:-1,
+						//sortable: true, //可以排序
+						//sortname: 'id', //排序字段名
+						//sortorder: "desc", //排序方式：倒序，本例中设置默认按id倒序排序
+						gridComplete: function(){  
+							//TODO  
+						},  
+						
+						    loadComplete: function() {  
+								var grid = $("#list1");  
+								var ids = grid.getDataIDs();  
+								for (var i = 0; i < ids.length; i++) {  
+									grid.setRowData ( ids[i], false, {height: 30} );  
+								}  
+							}  ,
+						// 单元格被点击选择回调函数， rowid为改行数据id值，iCol为改行索引，cellcontent为该行html代码，e为click事件  
+						onCellSelect: function(rowid, iCol, cellcontent,e){  
+							//TODO  
+						},
+						editurl: "MyEdit.php",	
+					});  
+	
+
+
+	//onload();
+	})
+
+function onload()
+{
+
+		var strJQGrid2;
+
+		strJQGrid2 = 'data1.php';
+		
+
+		$("#list1").jqGrid('setGridParam',{  
+		url:strJQGrid2 , 	
+		datatype:'json',    
+		page:1    
+		}).trigger("reloadGrid");   
+alert("1");
+}
+
+
+
+////////////////////////////关页面			
+var clientX = 0;
+var clientY = 0;
+
+window.onmousedown = function (event) {
+      event = event || window.event;
+      clientX = event.clientX;
+      clientY = event.clientY;
+}
+
+window.onbeforeunload = function () {
+if( clientY < 20){
+	$.ajax({
+	type:"POST",
+	url:"../cleansession.php",
+	data: {"clean":"退出登录"},
+	dataType:"json",
+	async:false,
+	success:function(data)
+	{						
+	}
+	});	
+}
+};
+
+</script>
+
+
+

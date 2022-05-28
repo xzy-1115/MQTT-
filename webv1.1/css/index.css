@@ -1,0 +1,36 @@
+
+#for-index{
+	width: 600px;
+	height: 400px;
+	margin: 0 auto;
+	position: relative;
+	top: 150px;
+}
+#word{
+	width: 200px;
+	height: 400px;
+	float: left;
+}
+
+#p-1{
+	display: inline-block;
+	height: 100px;
+	line-height: 100px;
+	width: 200px;
+	color: #E0560B;
+	font-size: 300%;
+	margin-top: 100px;
+}
+
+#p-2{
+	display: inline-block;
+	height: 40px;
+	width: 200px;
+	font-size: 120%;
+	line-height: 40px;
+}
+.version{
+	position: absolute;
+	bottom: 0px;
+	left: 0px;
+}

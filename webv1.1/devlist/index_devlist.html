@@ -1,0 +1,211 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <!--<meta charset="UTF-8">-->
+	<!--<meta name="viewport" content="width=320.1,minimum-scale=1.0,maximum-scale=1.0">-->
+	<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    <title>设备列表</title>
+	<link rel="stylesheet" type="text/css" href="../css/common.css">
+	<link rel="stylesheet" type="text/css" href="../css/2nddevList.css">
+    <script type="text/javascript" src="jquery1-1.7.2.min.js"></script>
+</head>
+ <?php 
+	session_start(); 
+	if($_SESSION['UserName'])
+	$tempstr=1;
+	//$tempstr=0;
+	else $tempstr=0;
+	$_SESSION['SN']='';
+?>
+<body>
+	<div class="center public-width" id="container">
+		<div id="left">
+			<div id="logo">
+				<img src="../img/common/logo_黑底.png"/>
+			</div>
+			<div id="menu-box">
+				<ul id="menu">
+					<!--管理员菜单-->
+					<?php
+						session_start();
+						include_once ("../connect.php");
+						$result = mysql_query("SELECT * FROM use_login WHERE UserName ='".$_SESSION['UserName']."'  ");
+						$row = mysql_fetch_array($result, MYSQL_ASSOC);
+						$count = $row['Role'];
+						if($count==1){
+					?>
+					<li><a id="userMap" href="../UserMap/user_map.html">客户地图</a></li>
+					<li><a class="devMap" href="../DevMap_admin/devMap_admin.html">设备地图</a></li>
+					<li><a class="search" href="../searchInfo/searchInfo.html">信息搜索</a></li>
+					<li><a id="saleRank" href="../rank/rank.html">销售排名</a></li>
+					<li><a class="userLogs" href="../logmanage/infor.html">客户日志</a></li>
+					<li><a class="modifyInfo" href="../infocompli/changeAdminInfor.html">修改管理员信息</a></li>
+					<li><a class="appDownLoad" href="../QRcode/appDownLoad.html">移动APP下载</a></li>
+					<!--
+                    	作者：1763257419@qq.com
+                    	时间：2018-03-30
+                    	描述：二级客户菜单
+                    -->
+                	<?php
+				   		 }else if($count==2){
+				    ?>
+                     <li><a id="addUser" href="../UserManage/UserManage.html">添加客户</a></li>
+                    <li><a id="addDev" href="../Adddevice/index.html">添加设备</a></li>
+                    <li><a class="devMap" href="../DevMap/dev_map.html">设备地图</a></li>
+                    <li><a class="devList" href="../devlist/index_devlist.html">设备列表</a></li>
+                    <li><a class="modifyInfo" href="../infocompli/infor.html">修改客户信息</a></li>
+                    <li><a class="userLogs" href="../logmanage/infor.html">客户日志</a></li>
+                    <li><a class="appDownLoad" href="../QRcode/appDownLoad.html">移动APP下载</a></li>
+                    <li><a class="QA" href="../QA/news.html">客户问题跟踪</a></li>
+                    <li><a class="feedback" href="../OA/index.html">客户信息反馈</a></li>
+                    <!--
+                    	作者：1763257419@qq.com
+                    	时间：2018-03-30
+                    	描述：三级客户菜单
+                    -->
+                	<?php
+					    }else if($count==3){
+					?>
+					<li><a class="devMap" href="../DevMap/dev_map.html">设备地图</a></li>
+                    <li><a class="devList" href="../devlist/index_devlist.html">设备列表</a></li>
+                    <li><a class="modifyInfo" href="../infocompli/infor.html">修改客户信息</a></li>
+                    <li><a class="userLogs" href="../logmanage/infor.html">客户日志</a></li>
+                    <li><a class="appDownLoad" href="../QRcode/appDownLoad.html">移动APP下载</a></li>
+					<li><a class="QA" href="../QA/news.html">客户问题跟踪</a></li>
+                    <li><a class="devInfoFeedBack" href="../devInfoFeedBack/devInfoFeedBack.html">设备信息反馈</a></li>
+                    <?php
+				    	}
+				    ?>
+				</ul>
+			</div>
+		</div>
+		<div id="right">
+			<div id="title">
+				<div id="list-icon">
+					<a href="../main.html"><img src="../img/common/list-title.png"/></a>
+				</div>
+				<h1>亿维自动化物联网云平台</h1>
+				<div id="userinfo-box">
+					<div id="head-icon">
+						<a href="../main.html"><img src="../img/common/驯鹿.png"/></a>
+					</div>
+					<div id="user-info">
+						<li class="list" id="user-name">
+							<?php echo $_SESSION['UserName'];?>
+							<ul>
+								<li class="list"><a id="out" href="../exit.php">退出登录</a></li>
+							</ul>
+						</li>
+					</div>
+				</div>
+			</div>
+			<div id="main-box">
+				<div id="devlist-title">
+					<p>设备列表</p>
+				</div>
+				<div id="devlist-body">
+					<article>
+					</article>
+				</div>
+			</div>
+		</div>
+	</div>
+</body>
+</html>
+
+<script type="text/javascript">
+ var teststr=<?php echo $tempstr;?>;
+if(teststr==0)
+{
+window.location.href="../index.html";
+}
+$(function(){
+	$('.list').hover(function(){
+		$(this).children('ul').stop().slideDown('fast');
+	},function(){
+		$(this).children('ul').stop().slideUp('fast');
+	});
+});
+
+
+var pic;
+$(function() {
+        $.ajax({
+            url: "mysql.search.handle.php",
+            type: "GET",
+            dataType: "json",
+            success: function (res) { //不需要JSON.parse(res)，因为dataType已设置为json格式
+                if (res.state === 200) { //获取成功
+					$('article').empty();//清空处理
+                    for (var i = 0; i < res.result.length; i++) {
+					 
+					var status;
+					if(res.devstatus[i] == 1){
+					status = "在线";
+					}else {
+					status = "离线";
+					}	
+					DevHtml='<div id="dev-1" class="devlist">';
+						DevHtml+='<div class="devType">';
+						pic=res.Typedev[i];
+							DevHtml +='<img src="../img/'+pic+'.png"/>';
+						DevHtml +='</div>';
+						DevHtml +='<div class="devInfo">';
+							DevHtml +='<div class="devTitle">';
+								DevHtml +='<p class="devSn">SN:'+res.result[i].SN+'</p>'; 
+								DevHtml +='<p class="devStatus">状态:'+status+'</p>';
+							DevHtml +='</div>';
+							DevHtml +='<div class="devOption">';
+							
+								DevHtml +='<a class="basicCfg" href="../DevCfg/DevCfg.html?SN='+res.result[i].SN+'"><p>基本配置</p></a>';	
+								DevHtml +='<a class="alarmCfg" href="../DevAlarm/DevAla.html?SN='+res.result[i].SN+'"><p>报警配置</p></a>';	
+								DevHtml +='<a class="alarmInfo" href="../DevAlarmView/DevAlarmView.html?SN='+res.result[i].SN+'"><p>报警信息</p></a>';				
+								DevHtml +='<a class="currentData" href="../DevRun/DevRun.html?SN='+res.result[i].SN+'"><p>实时数据</p></a>';	
+								DevHtml +='<a class="historyData" href="../history/history.html?SN='+res.result[i].SN+'"><p>历史数据</p></a>';	
+								DevHtml +='<a class="historyChart" href="../history/historyChart.html?SN='+res.result[i].SN+'"><p>历史曲线</p></a>';	
+
+							DevHtml +='</div>';
+						DevHtml +='</div>';
+					DevHtml +='</div>';									
+					$('article').append(DevHtml);//清空处理
+					}
+
+                } else {
+                    alert("返回数据有误");
+                }
+
+            },
+            error: function (res) {
+                alert("发生错误：" + res.status);
+            }
+
+        });
+
+});
+
+////////////////////////////关页面			
+var clientX = 0;
+var clientY = 0;
+
+window.onmousedown = function (event) {
+      event = event || window.event;
+      clientX = event.clientX;
+      clientY = event.clientY;
+}
+
+window.onbeforeunload = function () {
+if( clientY < 20){
+	$.ajax({
+	type:"POST",
+	url:"../cleansession.php",
+	data: {"clean":"退出登录"},
+	dataType:"json",
+	async:false,
+	success:function(data)
+	{						
+	}
+	});	
+}
+};
+
+</script>

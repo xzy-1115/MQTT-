@@ -1,0 +1,505 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <title>地图搜索</title>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    <script type="text/javascript" src="./js/jquery-1.8.2.min.js"></script>
+    <script type="text/javascript" src="../JS/jquery.json-2.3.min.js"></script>
+    <script type="text/javascript" src="http://api.map.baidu.com/api?&v=1.3"></script>
+    <!--<link rel="stylesheet" type="text/css" href="css/searchInfo.css">-->
+    <link rel="stylesheet" type="text/css" href="../css/common.css"/>
+    <link rel="stylesheet" type="text/css" href="../css/search_admin.css"/>
+    <!-- <script type="text/javascript" src="js/searchInfo.js"></script> -->
+</head>
+ <?php 
+	session_start(); 
+	if($_SESSION['UserName'])
+	$tempstr=1;
+	//$tempstr=0;
+	else $tempstr=0;
+?>
+<body>
+	<div class="center public-width" id="container">
+            <div id="left">
+                <div id="logo">
+                    <img src="../img/common/logo_黑底.png"/>
+                </div>
+                <div id="menu-box">
+                    <ul id="menu">
+                        <!--管理员菜单-->
+                        <?php
+                            session_start();
+                            include_once ("../connect.php");
+                            $result = mysql_query("SELECT * FROM use_login WHERE UserName ='".$_SESSION['UserName']."'  ");
+                            $row = mysql_fetch_array($result, MYSQL_ASSOC);
+                            $count = $row['Role'];
+                            if($count==1){
+                        ?>
+                        <li><a id="userMap" href="../UserMap/user_map.html">客户地图</a></li>
+                        <li><a class="devMap" href="../DevMap_admin/devMap_admin.html">设备地图</a></li>
+                        <li><a class="search" href="../searchInfo/searchInfo.html">信息搜索</a></li>
+                        <li><a id="saleRank" href="../rank/rank.html">销售排名</a></li>
+                        <li><a class="userLogs" href="../logmanage/infor.html">客户日志</a></li>
+                        <li><a class="modifyInfo" href="../infocompli/changeAdminInfor.html">修改管理员信息</a></li>
+                        <li><a class="appDownLoad" href="../QRcode/appDownLoad.html">移动APP下载</a></li>
+                        <!--
+                            作者：1763257419@qq.com
+                            时间：2018-03-30
+                            描述：二级客户菜单
+                        -->
+                        <?php
+                             }else if($count==2){
+                        ?>
+                        <li><a id="addUser" href="../UserManage/UserManage.html">添加客户</a></li>
+                        <li><a id="addDev" href="../Adddevice/index.html">添加设备</a></li>
+                        <li><a class="devMap" href="../DevMap/dev_map.html">设备地图</a></li>
+                        <li><a class="devList" href="../devlist/index_devlist.html">设备列表</a></li>
+                        <li><a class="modifyInfo" href="../infocompli/infor.html">修改客户信息</a></li>
+                        <li><a class="userLogs" href="../logmanage/infor.html">客户日志</a></li>
+                        <li><a class="appDownLoad" href="../QRcode/appDownLoad.html">移动APP下载</a></li>
+                        <li><a class="QA" href="../QA/news.html">客户问题跟踪</a></li>
+                        <li><a class="feedback" href="../OA/index.html">客户信息反馈</a></li>
+                        <!--
+                            作者：1763257419@qq.com
+                            时间：2018-03-30
+                            描述：三级客户菜单
+                        -->
+                        <?php
+                            }else if($count==3){
+                        ?>
+                        <li><a class="devMap" href="../DevMap/dev_map.html">设备地图</a></li>
+                        <li><a class="devList" href="../devlist/index_devlist.html">设备列表</a></li>
+                        <li><a class="modifyInfo" href="../infocompli/infor.html">修改客户信息</a></li>
+                        <li><a class="userLogs" href="../logmanage/infor.html">客户日志</a></li>
+                        <li><a class="appDownLoad" href="../QRcode/appDownLoad.html">移动APP下载</a></li>
+						<li><a class="QA" href="../QA/news.html">客户问题跟踪</a></li>
+                        <li><a class="devInfoFeedBack" href="../devInfoFeedBack/devInfoFeedBack.html">设备信息反馈</a></li>
+                        <?php
+                            }
+                        ?>
+                    </ul>
+                </div>
+            </div>
+            <div id="right">
+                <div id="title">
+                    <div id="list-icon">
+                       <a href="../main.html"><img src="../img/common/list-title.png"/></a>
+                    </div>
+                    <h1>亿维自动化物联网云平台</h1>
+                    <div id="userinfo-box">
+                        <div id="head-icon">
+                            <a href="../main.html"><img src="../img/common/驯鹿.png"/></a>
+                        </div>
+                        <div id="user-info">
+                            <li class="list" id="user-name">
+                                <?php echo $_SESSION['UserName'];?>
+                                <ul>
+                                    <li class="list"><a id="out" href="../exit.php">退出登录</a></li>
+                                </ul>
+                            </li>
+                        </div>
+                    </div>
+                </div>
+                <div id="main-box">
+                    <div id="search-title">
+                        <p>地图搜索</p>
+                    </div>
+                    <div class="search-body" id="search-body">
+                        <div id="search-box">
+                            <select name="" id="Option">
+                                <option value="1">搜设备</option>
+                                <option value="2">搜客户</option>
+                            </select>
+                            <input type="text" name="name" id="inputInfo" value="" placeholder="请输入设备（或客户）名称"/>
+                            <input type="button" id="search-btn" onclick="searchI()" value=""/>
+                        </div>
+                        <div id="searchMap">
+                            
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+</body>
+</html> 
+<script type="text/javascript">
+ var teststr=<?php echo $tempstr;?>;
+if(teststr==0)
+{
+window.location.href="../index.html";
+}
+
+// 退出登录的下拉效果
+$(function(){
+    $('.list').hover(function(){
+        $(this).children('ul').stop().slideDown('fast');
+    },function(){
+        $(this).children('ul').stop().slideUp('fast');
+    });
+});
+
+    
+var map=new BMap.Map("searchMap");//创建map
+BMapInit();
+var arrDevLong=new Array();
+var arrDevLa=new Array();
+var arrDevSN=new Array();
+var arrDevLocalName=new Array();//设备现场名称
+var arrDevIndusType=new Array();//设备工业类型
+var arrDevAddr=new Array();//设备地址
+var arrDevType=new Array();//设备型号
+
+var arrUser=new Array();
+var arrUserLa=new Array();
+var arrUserLong=new Array();
+var arrUserRole=new Array();//客户角色
+var arrUserCompany=new Array();//客户所属公司
+var arrUserPhone=new Array();//客户电话
+var arrUserEmail=new Array();//客户邮箱
+var arrUserIndusType=new Array();//客户工业类型
+var arrUserAddr=new Array();
+var arrUserRealName=new Array();//客户真实姓名
+
+var arr_point=new Array();
+var mapSpots = new Array;
+var url = "http://image.tupian114.com/20140419/09274112.png";
+var content;
+var myIcon = new BMap.Icon(url, new BMap.Size(40,30));
+var opts = {
+                width : 180,     // 信息窗口宽度
+                height: 180,     // 信息窗口高度
+                title : "信息窗口" , // 信息窗口标题
+                enableMessage:true//设置允许信息窗发送短息
+               };
+
+
+
+function searchI(){
+    arrDevLong.splice(0,arrDevLong.length);
+    arrDevLa.splice(0,arrDevLa.length);
+    arrUserLa.splice(0,arrUserLa.length);
+    arrUserLong.splice(0,arrUserLong.length);
+    arr_point.splice(0,arr_point.length);
+    BMapInit();
+    $.ajax({
+            url:"./searchInfo.php",
+            type:"POST",
+            data: {"choose":document.getElementById('Option').value, "value":document.getElementById('inputInfo').value},
+            dataType:"json",
+            async:false,
+            success:function(data){
+                if((data.Devstr=="error")||(data.Userstr=="error")){
+                    alert("设备（客户）名称输入有误，请核实后重新输入");
+                }else
+                {
+                 
+                    if(document.getElementById('Option').value==1)
+                    {
+                        var devLongstring=data.DevLong+'';
+                        var devLastring=data.DevLa+'';
+                        var devSNstring=data.Devstr+'';
+                        var devLocalNamestring=data.DevLocalName+'';
+                        var devIndusTypestring=data.DevIndusType+'';
+                        var devDevAddrstring=data.DevAddr+'';
+                        var devDevTypestring=data.DevType+'';
+                        for(var i=0;i<devLongstring.split("_").length;i++)
+                        {
+                            arrDevLong[i]=devLongstring.split("_")[i];
+                            arrDevLa[i]=devLastring.split("_")[i];
+                            arrDevSN[i]=devSNstring.split("_")[i];
+                            arrDevLocalName[i]=devLocalNamestring.split("_")[i];
+                            arrDevIndusType[i]=devIndusTypestring.split("_")[i];
+                            arrDevAddr[i]=devDevAddrstring.split("_")[i];
+                            arrDevType[i]=devDevTypestring.split("_")[i];
+                            arr_point[i]=new BMap.Point(arrDevLong[i],arrDevLa[i]);
+                            // marker = new BMap.Marker(arr_point[i]);
+                            // map.addOverlay(marker);
+                        }
+                        addSpots(devLongstring.split("_").length,document.getElementById('Option').value);
+
+                    }else
+                    {
+                        var userLongstring=data.UserLong+'';
+                        var userLastring=data.UserLa+'';
+                        var userstring=data.Userstr+'';
+                        var userRolestring=data.UserRole+'';
+                        var userCompanystring=data.UserCompany+'';
+                        var userPhonestring=data.UserPhone+'';
+                        var userEmailstring=data.UserEmail+'';
+                        var userIndusTypestring=data.UserIndusType+'';
+                        var userAddrstring=data.UserAddr+'';
+                        var userRealNamestring=data.UserRealName+'';
+                        for(var i=0;i<userLongstring.split("_").length;i++)
+                        {
+                            arrUserLong[i]=userLongstring.split("_")[i];
+                            arrUserLa[i]=userLastring.split("_")[i];
+                            arrUser[i]=userstring.split("_")[i];
+                            arrUserRole[i]=userRolestring.split("_")[i];
+                            arrUserCompany[i]=userCompanystring.split("_")[i];
+                            arrUserPhone[i]=userPhonestring.split("_")[i];
+                            arrUserEmail[i]=userEmailstring.split("_")[i];
+                            arrUserIndusType[i]=userIndusTypestring.split("_")[i];
+                            arrUserRealName[i]=userRealNamestring.split("_")[i];
+                            arrUserAddr[i]=userAddrstring.split("_")[i];
+                            arr_point[i]=new BMap.Point(arrUserLong[i],arrUserLa[i]);
+                            // marker = new BMap.Marker(arr_point[i]);
+                            // map.addOverlay(marker);
+                        }
+                        addSpots(userLongstring.split("_").length,document.getElementById('Option').value);
+                    }
+                }                            
+            },
+            error: function(XMLHttpRequest, textStatus, errorThrown) {
+//这个error函数调试时非常有用，如果解析不正确，将会弹出错误框
+　　　　        alert(XMLHttpRequest.responseText); 
+                alert(XMLHttpRequest.status);
+                alert(XMLHttpRequest.readyState);
+                alert(textStatus); // parser error;
+            }
+    });
+
+}
+
+function BMapInit(){
+    map=new BMap.Map("searchMap");//创建map
+    map.centerAndZoom(new BMap.Point(114.317,30.594),5);//初始化地图，设置中心点坐标和地图级别
+    //添加地图类型控件
+    map.addControl(new BMap.MapTypeControl({
+        mapTypes:[
+            BMAP_NORMAL_MAP,
+            BMAP_HYBRID_MAP
+        ]}));     
+    map.setCurrentCity("武汉");          // 设置地图显示的城市 此项是必须设置的
+    map.enableScrollWheelZoom(true);     //开启鼠标滚轮缩放
+}
+
+function addSpots(arr_length,choose){
+
+     for(var i=0;i<arr_length;i++)
+         {
+                if(arrUserIndusType[i]==0)
+                {
+                    arrUserIndusType[i]="智能车库";   
+                    arrDevIndusType[i]="智能车库";
+                }else if(arrUserIndusType[i]==1)
+                {
+                    arrUserIndusType[i]="温控系统";
+                    arrDevIndusType[i]="温控系统";
+                }else if(arrUserIndusType[i]==2)
+                {
+                    arrUserIndusType[i]="农业大棚";
+                    arrDevIndusType[i]="农业大棚";
+                }else if(arrUserIndusType[i]==3)
+				{
+					arrUserIndusType[i]="暖通行业";
+					arrDevIndusType[i]="暖通行业"
+				}else if(arrUserIndusType[i]==4)
+				{
+					arrUserIndusType[i]="塑胶机械";
+		            arrDevIndusType[i]="塑胶机械";				
+				}else if(arrUserIndusType[i]==5)
+				{
+				arrUserIndusType[i]="纺织机械";
+				arrUserIndusType[i]="纺织机械";
+				}else if(arrUserIndusType[i]==6)
+				{
+				arrUserIndusType[i]="矿山机械";
+				arrDevIndusType[i]="矿山机械";
+				}else if(arrUserIndusType[i]==7)
+				{
+				arrUserIndusType[i]="冶金行业";
+				arrDevIndusType[i]="冶金行业";
+				}else if(arrUserIndusType[i]==8)
+				{
+				arrUserIndusType[i]="电力行业";  
+                arrDevIndusType[i]="电力行业";			
+				}else if(arrUserIndusType[i]==9)
+				{
+				arrUserIndusType[i]="石化行业";
+				arrDevIndusType[i]="石化行业";
+				}else if(arrUserIndusType[i]==10)
+				{
+				arrUserIndusType[i]="建材行业";
+				arrDevIndusType[i]="建材行业";
+				}else if(arrUserIndusType[i]==11)
+				{
+				arrUserIndusType[i]="汽车制造";
+				arrDevIndusType[i]="汽车制造";
+				}else if(arrUserIndusType[i]==12)
+				{
+				arrUserIndusType[i]="包装机械";
+                arrDevIndusType[i]="包装机械";		
+				}else if(arrUserIndusType[i]==13)
+				{
+				arrUserIndusType[i]="电子设备";
+				arrDevIndusType[i]="电子设备";
+				}else if(arrUserIndusType[i]==14)
+				{
+				arrUserIndusType[i]="水处理";
+				arrDevIndusType[i]="水处理";
+				}else if(arrUserIndusType[i]==15)
+				{
+				arrUserIndusType[i]="仿真设备";
+				arrDevIndusType[i]="仿真设备";
+				}else if(arrUserIndusType[i]==16)
+				{
+				arrUserIndusType[i]="养殖行业";
+				arrDevIndusType[i]="养殖行业";
+				}else if(arrUserIndusType[i]==17)
+				{
+				arrUserIndusType[i]="冷库行业";
+				arrDevIndusType[i]="冷库行业";
+				}else if(arrUserIndusType[i]==18)
+				{
+				arrUserIndusType[i]="消防设备";
+				arrDevIndusType[i]="消防设备";
+				}else if(arrUserIndusType[i]==19)
+				{
+				arrUserIndusType[i]="环保行业";
+                arrDevIndusType[i]="环保行业";				
+				}else if(arrUserIndusType[i]==20)
+				{
+				arrUserIndusType[i]="医药行业";
+				arrDevIndusType[i]="医药行业";
+				}else if(arrUserIndusType[i]==21)
+				{
+				arrUserIndusType[i]="轨道交通行业";
+				arrDevIndusType[i]="轨道交通行业";
+				}else if(arrUserIndusType[i]==22)
+				{
+				arrUserIndusType[i]="核电行业";
+				arrDevIndusType[i]="核电行业";
+				}
+                
+                 if(arrDevIndusType[i]==0)
+                {
+                    arrDevIndusType[i]="智能车库";
+                }else if(arrDevIndusType[i]==1)
+                {
+                    arrDevIndusType[i]="温控系统";
+                }else if(arrDevIndusType[i]==2)
+                {
+                    arrDevIndusType[i]="农业大棚";
+                }else if(arrDevIndusType[i]==3)
+				{
+					arrDevIndusType[i]="暖通行业";
+				}else if(arrDevIndusType[i]==4)
+				{
+					arrDevIndusType[i]="塑胶机械";   
+				}else if(arrDevIndusType[i]==5)
+				{
+					arrDevIndusType[i]="纺织机械";
+				}else if(arrDevIndusType[i]==6)
+				{
+					arrDevIndusType[i]="矿山机械";
+				}else if(arrDevIndusType[i]==7)
+				{
+					arrDevIndusType[i]="冶金行业";
+				}else if(arrDevIndusType[i]==8)
+				{
+					arrDevIndusType[i]="电力行业";   
+				}else if(arrDevIndusType[i]==9)
+				{
+					arrDevIndusType[i]="石化行业";
+				}else if(arrDevIndusType[i]==10)
+				{
+					arrDevIndusType[i]="建材行业";
+				}else if(arrDevIndusType[i]==11)
+				{
+					arrDevIndusType[i]="汽车制造";
+				}else if(arrDevIndusType[i]==12)
+				{
+					arrDevIndusType[i]="包装机械";   
+				}else if(arrUserIndusType[i]==13)
+				{
+					arrDevIndusType[i]="电子设备";
+				}else if(arrDevIndusType[i]==14)
+				{
+					arrDevIndusType[i]="水处理";
+				}else if(arrDevIndusType[i]==15)
+				{
+					arrDevIndusType[i]="仿真设备";
+				}else if(arrDevIndusType[i]==16)
+				{
+					arrDevIndusType[i]="养殖行业";
+				}else if(arrDevIndusType[i]==17)
+				{
+					arrDevIndusType[i]="冷库行业";
+				}else if(arrDevIndusType[i]==18)
+				{
+					arrDevIndusType[i]="消防设备";
+				}else if(arrDevIndusType[i]==19)
+				{
+					arrDevIndusType[i]="环保行业";   
+				}else if(arrDevIndusType[i]==20)
+				{
+					arrDevIndusType[i]="医药行业";
+				}else if(arrDevIndusType[i]==21)
+				{
+					arrDevIndusType[i]="轨道交通行业";
+				}else if(arrDevIndusType[i]==22)
+				{
+					arrDevIndusType[i]="核电行业";
+				}
+                if(choose==1)
+                {
+                    content = "";
+                    content = "<div><span>SN码："+arrDevSN[i]+"</span></br>"+"<span>现场名号："+arrDevLocalName[i]+"</span></br>"+"<span>行业类型："+arrDevIndusType[i]+"</span></br>"+"<span>设备地址："+arrDevAddr[i]+"</span></br>"+"<span>设备型号："+arrDevType[i]+"</span></br>"+"</div>";
+                }else
+                {   
+                    content = "";
+                    content = "<div><span>客户名："+arrUser[i]+"</span></br>"+"<span>客户角色："+arrUserRole[i]+"</span></br>"+" <span>客户所属公司："+arrUserCompany[i]+"</span></br>"+"<span>电话："+arrUserPhone[i]+"</span></br>"+"<span>邮箱"+arrUserEmail[i]+"</span></br>"+"<span>工业类型："+arrUserIndusType[i]+"</span></br>"+"<span>地址："+arrUserAddr[i]+"</span></br>"+"<span>客户真实姓名："+arrUserRealName[i]+"</span></br></div>";
+                } 
+            marker = new BMap.Marker(arr_point[i]);
+            map.addOverlay(marker);
+            //var lable =  new BMap.Label(content,{offset:new BMap.Size(20,-10)});
+            //marker.setLabel(lable);
+            addClickHandler(content,marker); //添加点击处理程序（点击会出现sn码等信息）
+         }
+    }
+
+
+function addClickHandler(content,marker){
+    marker.addEventListener("click",function(e){
+        openInfo(content,e)}
+    );
+}
+function translateOnline(code){
+    if (code == 0) {return "离线";}
+    else if(code == 1) {return "在线";}
+    else{return "error";}
+
+}
+
+function openInfo(content,e){
+    var p = e.target;
+    var point = new BMap.Point(p.getPosition().lng, p.getPosition().lat);
+    var infoWindow = new BMap.InfoWindow(content,opts);  // 创建信息窗口对象 
+    map.openInfoWindow(infoWindow,point); //开启信息窗口
+}
+
+////////////////////////////关页面			
+var clientX = 0;
+var clientY = 0;
+
+window.onmousedown = function (event) {
+      event = event || window.event;
+      clientX = event.clientX;
+      clientY = event.clientY;
+}
+
+window.onbeforeunload = function () {
+if( clientY < 20){
+	$.ajax({
+	type:"POST",
+	url:"../cleansession.php",
+	data: {"clean":"退出登录"},
+	dataType:"json",
+	async:false,
+	success:function(data)
+	{						
+	}
+	});	
+}
+};
+</script>

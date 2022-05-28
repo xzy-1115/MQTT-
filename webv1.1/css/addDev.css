@@ -1,0 +1,142 @@
+#addDev-body{
+	width: 100%;
+	height: 650px;
+	background-color: #fff;
+	border-radius:5px;
+	margin-top: 20px;
+}
+#btn{
+	width: 80%;
+	height: 100px;
+	margin-left: 10%;
+}
+
+#add-dev,#delete-dev,#modify-info{
+	display: inline-block;
+	width: 20%;
+	margin-left: 4%;
+	margin-top: 25px;
+	height: 50px;
+	line-height: 50px;
+	border-radius: 5px;
+	border: 1px solid #000000;
+}
+#add-dev:hover,#delete-dev:hover,#modify-info:hover{
+	border: 1px solid #E0560B;
+}
+#btn p:hover{
+	color: #E0560B;
+}
+
+
+#add-dev{
+	background: url(../img/addDev/绿洲_添加_设备.png) no-repeat scroll 20px center;
+}
+
+#delete-dev{
+	background: url(../img/addDev/删除.png) no-repeat scroll 21px center;
+}
+#modify-info{
+	background: url(../img/addDev/修改信息.png) no-repeat scroll 21px center;
+}
+
+
+#add-dev p,#delete-dev p,#modify-info p{
+	margin-left: 70px;
+	color: #000;
+	font-size: 130%;
+}
+
+#addDev-grid{
+	width: 90%;
+	height: 500px;
+	margin-left: 5%;
+	margin-top: 20px;
+}
+
+ .black_overlay{ 
+    display: none; 
+    position: absolute; 
+    top: 0%; 
+    left: 0%; 
+    width: 100%; 
+    height: 100%; 
+    background-color: #999; 
+    z-index:1001; 
+    -moz-opacity: 0.3; 
+    opacity:.80; 
+    filter: alpha(opacity=88); 
+} 
+.white_content { 
+    display: none; 
+    position: absolute; 
+    top: 25%; 
+    left: 25%; 
+    width: 55%; 
+    height: 65%; 
+    padding: 5px; 
+    border: 3px solid orange; 
+    background-color: white; 
+    z-index:1002; 
+    overflow: auto; 
+} 
+
+
+
+#light a{
+    position: absolute; 
+    top: 0;
+    right: 5px;
+    /*margin-top: 0;*/
+}
+.input-info{
+    width: 100%;
+    height: 50px;
+    margin-top: 20px;
+}
+
+#light h3{
+	display: inline-block;
+	width: 30%;
+	height: 70px;
+	line-height: 100px;
+	margin-left: 35%;
+	font-size: 30px;
+	color:#E0560B;
+	text-align: center;
+}
+
+.input-info p{
+	display: inline-block;
+	width: 20%;
+	height: 50px;
+	line-height: 50px;
+	float: left;
+	margin-left: 8%;
+	font-size: 25px;
+	text-align: right;
+}
+
+#siteName,#indusType,#devAddress{
+	width: 60%;
+	height: 50px;
+	line-height: 50px;
+	float: left;
+	margin-left: 4%;
+	border: 3px solid #E0560B;
+	border-radius: 5px;
+	font-size: 25px;
+}
+
+#submitInfo{
+	width: 40%;
+	height: 50px;
+	line-height: 50px;
+	text-align: center;
+	margin-left:30%;
+	background-color: #E0560B;
+	border-radius: 10px;
+	color: #fff; 
+	margin-top: 20px;
+	font-size: 20px;
+}

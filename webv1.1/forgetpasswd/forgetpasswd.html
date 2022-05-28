@@ -1,0 +1,112 @@
+<!DOCTYPE>
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<title>找回密码</title>
+<link rel="stylesheet" type="text/css" href="../css/login.css">
+<script type="text/javascript" src="http://api.map.baidu.com/api?v=2.0&ak=NkMIX99EyeqCnDFTYFm3h1a9WDQXZYWx"></script>
+<script type="text/javascript" src="../JS/jquery1-1.7.2.min.js" ></script>
+<script type="text/javascript" src="../JS/jquery.json-2.3.min.js"></script>
+<script type="text/javascript" src="../MQTT/mqttws31.js" ></script>
+<script  type="text/javascript" src="..
+/MQTT/config.js"></script>
+</head>
+
+<body>
+	<div class="center public-width" id="main-box">
+		<div id="left-box">
+			<div id="logo">
+				<img src="../img/login/logo_黑底.png"/>
+			</div>
+			<div id="backgnd-img">
+				<img src="../img/login/backgnd.png"/>
+			</div>
+		</div>
+		<div id="right-box">
+			<div id="login-box">
+					<h1 id="login-title">找回密码</h1>
+					<div id="login-input">
+						<div id="user-name" class="input-info">
+							<input type="text" name="" id="iUSERNAME" value="" placeholder="用户名"/>
+						</div>
+						<div id="pass-word" class="input-info">
+							<input type="email" name="PASSWORD" id="iPASSWORD" value="" placeholder="邮箱"/>
+						</div>
+						<div id="login">
+							<!-- <a id="login-btn" href="#">登&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp录</a> -->
+							<input  id="login-btn" type="button" name="" value="发&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp送" onclick="Login()">
+						</div>
+						<div id="reg">
+						</div>
+					</div>
+			</div>
+		</div>
+	</div>
+</body>
+</html>
+<script type="text/javascript">
+////检查手机号是否合法
+function checkMobile(str) {
+  var re = /^1\d{10}$/
+  if (re.test(str)) {
+    
+  } else {
+    alert("手机号码格式错误");
+  }
+}
+////检查邮箱是否合法
+function checkEmail(str){
+  var re = /^(\w-*\.*)+@(\w-?)+(\.\w{2,})+$/
+  if(re.test(str)){
+    
+  }else{
+    alert("邮箱格式错误");
+  }
+}
+
+
+function Login()
+{
+var USER_NAME;
+
+var  EMAIL;
+
+USER_NAME=document.getElementById('iUSERNAME').value;
+
+EMAIL=document.getElementById('iPASSWORD').value;
+
+if( USER_NAME  && EMAIL )
+{
+	
+	
+	  var re = /^(\w-*\.*)+@(\w-?)+(\.\w{2,})+$/
+	  if(re.test(EMAIL)){
+	  
+		$.ajax({
+						type:"POST",
+						url:"./sendMail/sendmail.php",
+						data: {"USERNAME":USER_NAME,"EMAIL":EMAIL},
+						dataType:"json",
+						async:false,
+						success:function(data)
+						{		
+							if (data.state == 200)
+							{  
+								alert("已将密码发送到您的邮箱，注意查收");
+								window.location.href="index.html";
+							}	
+							else if(data.state == 0) alert("您输入的邮箱地址不对");
+						
+						}
+						});
+			}
+			else alert("邮箱不合法");
+		
+}
+else {
+alert("有未填写的信息");
+}					
+					
+}
+</script>
+

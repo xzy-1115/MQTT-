@@ -1,0 +1,390 @@
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+	<title>报警配置</title>
+	<!-- css样式文件 -->
+	<link rel="stylesheet" type="text/css" href="../css/common.css">
+	<link rel="stylesheet" type="text/css" href="../css/devAlarm.css"> <!-- 自定义样式文件 -->
+
+    <link rel="stylesheet" type="text/css" href="css/style.css" />
+    <link rel="stylesheet" type="text/css" href="css/ui-lightness/jquery-ui-1.8.2.custom.css" />
+    <link rel="stylesheet" type="text/css" href="css/ui.jqgrid.css" />
+    <link rel="stylesheet" type="text/css" href="css/fancybox.css" />
+    <!-- js文件 -->
+	<script type="text/javascript" src="http://www.sucaihuo.com/Public/js/other/jquery.js"></script> 
+	<script src="js/i18n/grid.locale-cn.js" type="text/javascript"></script>
+	<script src="js/jquery.jqGrid.min.js" type="text/javascript"></script>
+	<script src="js/jquery.fancybox.js" type="text/javascript"></script>
+	<script src="js/jquery.message.js" type="text/javascript"></script>
+	<script type="text/javascript" src="../JS/jquery.json-2.3.min.js"></script>
+	<script type="text/javascript" src="../MQTT/mqttws31.js" ></script>
+	<script  type="text/javascript" src="../MQTT/config.js"></script>	
+</head>
+
+<?php
+
+session_start(); 
+	if($_SESSION['UserName'])
+	$tempstr=1;
+
+	else $tempstr=0;
+	
+if($_SESSION['SN'])
+	$strSN=$_SESSION['SN'];
+
+	else {
+	$strSN = $_GET['SN'];
+	$_SESSION['SN']=$strSN;
+	}
+?>
+
+<body>  
+	<div class="center public-width" id="container">
+		<div id="left">
+			<div id="logo" style="width: 150px;height: 50px;margin-left: 30px;margin-right: auto;">
+				<img src="../img/common/logo_黑底.png"/>
+			</div>
+			<div id="menu-box">
+				<ul id="menu">
+					<!--管理员菜单-->
+					<?php
+						session_start();
+						include_once ("../connect.php");
+						$result = mysql_query("SELECT * FROM use_login WHERE UserName ='".$_SESSION['UserName']."'  ");
+						$row = mysql_fetch_array($result, MYSQL_ASSOC);
+						$count = $row['Role'];
+						if($count==1){
+					?>
+					<li><a id="userMap" href="../UserMap/user_map.html">客户地图</a></li>
+					<li><a class="devMap" href="../DevMap_admin/devMap_admin.html">设备地图</a></li>
+					<li><a class="search" href="../searchInfo/searchInfo.html">信息搜索</a></li>
+					<li><a id="saleRank" href="../rank/rank.html">销售排名</a></li>
+					<li><a class="userLogs" href="../logmanage/infor.html">客户日志</a></li>
+					<li><a class="modifyInfo" href="../infocompli/changeAdminInfor.html">修改管理员信息</a></li>
+					<li><a class="appDownLoad" href="../QRcode/appDownLoad.html">移动APP下载</a></li>
+					<!--
+                    	作者：1763257419@qq.com
+                    	时间：2018-03-30
+                    	描述：二级客户菜单
+                    -->
+                	<?php
+				   		 }else if($count==2){
+				    ?>
+                    <li><a id="addUser" href="../UserManage/UserManage.html">添加客户</a></li>
+                    <li><a id="addDev" href="../Adddevice/index.html">添加设备</a></li>
+                    <li><a class="devMap" href="../DevMap/dev_map.html">设备地图</a></li>
+                    <li><a class="devList" href="../devlist/index_devlist.html">设备列表</a></li>
+                    <li><a class="modifyInfo" href="../infocompli/infor.html">修改客户信息</a></li>
+                    <li><a class="userLogs" href="../logmanage/infor.html">客户日志</a></li>
+                    <li><a class="appDownLoad" href="../QRcode/appDownLoad.html">移动APP下载</a></li>
+                    <li><a class="QA" href="../QA/news.html">客户问题跟踪</a></li>
+                    <li><a class="feedback" href="../OA/index.html">客户信息反馈</a></li>
+                    <!--
+                    	作者：1763257419@qq.com
+                    	时间：2018-03-30
+                    	描述：三级客户菜单
+                    -->
+                	<?php
+					    }else if($count==3){
+					?>
+					<li><a class="devMap" href="../DevMap/dev_map.html">设备地图</a></li>
+                    <li><a class="devList" href="../devlist/index_devlist.html">设备列表</a></li>
+                    <li><a class="modifyInfo" href="../infocompli/infor.html">修改客户信息</a></li>
+                    <li><a class="userLogs" href="../logmanage/infor.html">客户日志</a></li>
+                    <li><a class="appDownLoad" href="../QRcode/appDownLoad.html">移动APP下载</a></li>
+					<li><a class="QA" href="../QA/news.html">客户问题跟踪</a></li>
+                    <li><a class="devInfoFeedBack" href="../devInfoFeedBack/devInfoFeedBack.html">设备信息反馈</a></li>
+                    <?php
+				    	}
+				    ?>
+				</ul>
+			</div>
+		</div>
+		<div id="right">
+			<div id="title">
+				<div id="list-icon">
+					<a href="../devlist/index_devlist.html"><img src="../img/common/list-title.png"/></a>
+				</div>
+				<h1>亿维自动化物联网云平台</h1>
+				<div id="userinfo-box">
+					<div id="head-icon">
+						<a href="../main.html"><img src="../img/common/驯鹿.png"/></a>
+					</div>
+					<div id="user-info">
+						<li class="list" id="user-name">
+							<?php echo $_SESSION['UserName'];?>
+							<ul>
+								<li class="list"><a id="out" href="../exit.php">退出登录</a></li>
+							</ul>
+						</li>
+					</div>
+				</div>
+			</div>
+			<div id="main-box">
+				<div id="devAlarm-title">
+					<a href="../DevCfg/DevCfg.html?SN='+res.result[i].SN+'">基本配置</a>
+					<a href="javascript:void(0)" id="alarmCfg">报警配置</a>
+					<a href="../DevAlarmView/DevAlarmView.html?SN='+res.result[i].SN+'">报警信息</a>
+					<a href="../DevRun/DevRun.html?SN='+res.result[i].SN+'">实时数据</a>
+					<a href="../history/history.html?SN='+res.result[i].SN+'">历史数据</a>
+					<a href="../history/historyChart.html?SN='+res.result[i].SN+'">历史曲线</a>
+					<p>SN:  <input readonly="true" id="SN"  value=<?php  echo $strSN;?>></p>
+				</div>
+				<div id="devAlarm-body">
+					<div id="act-box">
+					</div>
+					<div class="grid_table" style="width: 950px height:600px; margin-left: 50px;margin-top:0; ">
+						<table id="list"></table>
+                    	
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>	
+</body>  
+</html>  
+
+<script type="text/javascript">
+ var teststr=<?php echo $tempstr;?>;
+if(teststr==0)
+{
+window.location.href="../index.html";
+}
+$(function(){
+	$('.list').hover(function(){
+		$(this).children('ul').stop().slideDown('fast');
+	},function(){
+		$(this).children('ul').stop().slideUp('fast');
+	});
+});
+	
+var  flag=0;
+var mqtt;
+ var lastsel;
+var reconnectTimeout = 2000;
+var SNstr=<?php echo $strSN;?>;
+var offset_num;
+var protocolstr=0;
+/*
+$("#SaveCfg_btn").click(function(){    
+jQuery('#list1').jqGrid('saveRow', lastsel); 
+var obj1=$("#list1").jqGrid("getRowData");
+var obj=$("#list").jqGrid("getRowData");
+var payloadstr;
+var rowData=$("#list1").jqGrid('getRowData',3);
+//if(protocolstr){
+payloadstr=SNstr+'_'+protocolstr+'_'+obj.length;
+var i;
+var yuzhi=new Array();
+var count=0;
+var sum;
+var rowstr=1;
+rowData=$("#list1").jqGrid('getRowData',rowstr.toString());rowstr++;
+sum=rowData.idstr-1; 
+for(j=1;j<(obj.length+1);j++)
+{
+		for(i=1;i<(obj1.length+1);i++){
+		rowData=$("#list1").jqGrid('getRowData',i);
+			if(parseInt(rowData.idstr)==j)
+			{
+				count++;
+			}
+        }
+		yuzhi[j-1]=count;count=0;
+}
+
+count=1;
+alert(yuzhi.length);
+for(i=0;i<yuzhi.length;)
+{   
+	payloadstr=payloadstr+'_'+yuzhi[i];//alert("yuzhi"+yuzhi[i]+"_"+i);
+	for(j=0;j<yuzhi[i];j++)
+	{
+		rowData=$("#list1").jqGrid('getRowData',count);
+		payloadstr=payloadstr+'_'+parseInt(rowData.ALAMAX);//alert(rowData.ALAMAX);
+		payloadstr=payloadstr+'_'+parseInt(rowData.ALAMIN);//alert(rowData.ALAMIN);
+		count++;
+	}i++;
+}
+//alert("count"+count);
+var dev_send_toptic;
+dev_send_toptic='/'+SNstr+'/DevRecv/ThresoldReq';
+MqttGetDevCfg(dev_send_toptic,payloadstr); //先告知设备，已经接收到
+
+	var o = jQuery("#list");
+	var rows = o.jqGrid('getRowData'); //获取当前显示的记录
+	var rowData =$.toJSON(rows); 
+	var o1 = jQuery("#list1");
+	var rows1 = o1.jqGrid('getRowData'); //获取当前显示的记录
+	var rowData1 =$.toJSON(rows1); 
+	var strJQGrid;
+	strJQGrid = 'DB_SaveCfg.php?SN='+SNstr+'&&ProtocolVer='+$("#xieyihao").val();
+  	$.ajax({
+		type:"POST",
+		//url:"./db/DB_SaveCfg.php",
+		url:strJQGrid,
+		data: {"rowdata_send":rowData,"rowdata1_send":rowData1},
+		dataType:"json",
+		async:false,
+		success:function(json)
+		{
+		if (json.state == 200)
+			{  
+				alert('更新成功！');
+			}
+			else alert(json.state);
+		}
+	});    
+
+	
+});*/
+
+function onclick_send(){    //告知设备
+		var dev_send_toptic;
+		var dev_send_mess;
+		var strProtocol;
+
+		$.ajax({
+						type:"POST",
+						url:"found_protocol.php",
+						data: {"SN":SNstr},
+						dataType:"json",
+						async:false,
+						success:function(s)
+						{				
+						      strProtocol=s.protocol;
+							
+							 dev_send_toptic='/'+SNstr+'/DevRecv/ThresoldReq';
+							 dev_send_mess=SNstr+"_"+strProtocol;
+							 MqttGetDevCfg(dev_send_toptic,dev_send_mess); 
+						}
+					});
+}
+
+
+
+$(document).ready(function() {
+
+	MQTTconnect();
+	
+	})
+
+
+
+
+
+////////////////////////////////////////////mqtt//////////////////////////////////////
+function MQTTconnect() {
+		mqtt = new Paho.MQTT.Client(
+						host,
+						port,
+						"web_" + parseInt(Math.random() * 100,
+						10));
+		var options = {
+			timeout: 3,
+			useSSL: useTLS,
+			cleanSession: cleansession,
+			onSuccess: onConnect,
+			onFailure: function (message) {
+				setTimeout(MQTTconnect, reconnectTimeout);
+			}
+		};
+		mqtt.onConnectionLost = onConnectionLost;
+        mqtt.onMessageArrived = onMessageArrived;
+
+        if (username != null) {
+            options.userName = username;
+            options.password = password;
+        }
+        mqtt.connect(options);
+    }
+function onConnect() {
+	var tp="/"+SNstr+"/DevSend/ThresoldAck";
+	mqtt.subscribe(tp, {qos: 0});
+	 onclick_send();
+}
+
+function onConnectionLost(responseObject) {
+	setTimeout(MQTTconnect, reconnectTimeout);
+};
+
+function onMessageArrived(message)
+{
+var urlstr;
+	var topic = message.destinationName;
+	var payload = message.payloadString;
+urlstr="alarm.php?DATASTR="+payload;
+
+jQuery("#list").jqGrid({  
+						// 请求后台json数据的url  
+						url: urlstr,  
+						// 后台返回的数据格式  
+						datatype: "json",  
+						// 列表标题  
+						colNames: ['序号', '属性', '区间最小值','区间类型', '区间最大值','报警文本'], //数据列名称（数组）
+						colModel: [//数据列各参数信息设置
+							{name: 'Offset', index: 'Offset',  width: 20, align: 'center', title: false,sortable:false},
+							{name: 'ItemName', index: 'ItemName', width: 30, title: false, align: 'center',sortable:false},
+							{name: 'TYPE', index: 'TYPE', width: 40, title: false, align: 'center',sortable:false},
+							{name: 'MIN', index: 'MIN', width: 60, title: false, align: 'center',sortable:false},
+								{name: 'MAX', index: 'MAX', width: 40, title: false, align: 'center',sortable:false},
+								{name: 'text', index: 'text', width: 40, title: false, align: 'center',sortable:false}
+						],
+						// 一页显示的行记录数  
+						  
+						// 表格宽度  
+						width:900,  
+						// 表格高度  
+						height:200,  
+						// 翻页控制条中 每页显示记录数可选集合  
+						 rowNum:-1						// 翻页DOM  
+						 
+						// 排序
+						//sortname:'Offset',
+						// 默认字段排序顺序，默认asc，正序  
+						//sortorder: "asc",   
+						// 列表总标题  
+						
+		
+						
+					});  
+	
+}
+
+function MqttGetDevCfg(tp,val)
+{
+	var message = new Paho.MQTT.Message(val);
+	message.destinationName = tp;
+	message.qos=0;
+	mqtt.send(message);
+}
+
+////////////////////////////关页面			
+var clientX = 0;
+var clientY = 0;
+
+window.onmousedown = function (event) {
+      event = event || window.event;
+      clientX = event.clientX;
+      clientY = event.clientY;
+}
+
+window.onbeforeunload = function () {
+if( clientY < 20){
+	$.ajax({
+	type:"POST",
+	url:"../cleansession.php",
+	data: {"clean":"退出登录"},
+	dataType:"json",
+	async:false,
+	success:function(data)
+	{						
+	}
+	});	
+}
+};
+
+</script>
+
+
+

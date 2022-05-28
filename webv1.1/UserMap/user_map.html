@@ -1,0 +1,394 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    <title>设备地图</title>
+   	<link rel="stylesheet" type="text/css" href="../css/common.css"/>
+	<link rel="stylesheet" type="text/css" href="../css/userMap_admin.css"/>
+	<script type="text/javascript" src="http://api.map.baidu.com/api?&v=1.3"></script>
+    <script type="text/javascript" src="jquery-1.12.1.js"></script>	
+</head>
+ <?php 
+	session_start(); 
+	if($_SESSION['UserName'])
+	$tempstr=1;
+	//$tempstr=0;
+	else $tempstr=0;
+?>
+ 
+<body>
+	<div class="center public-width" id="container">
+		<div id="left">
+			<div id="logo">
+				<img src="../img/common/logo_黑底.png"/>
+			</div>
+			<div id="menu-box">
+				<ul id="menu">
+					<?php
+						session_start();
+						include_once ("../connect.php");
+						$result = mysql_query("SELECT * FROM use_login WHERE UserName ='".$_SESSION['UserName']."'  ");
+						$row = mysql_fetch_array($result, MYSQL_ASSOC);
+						$count = $row['Role'];
+						if($count==1){
+					?>
+					<li><a id="userMap" href="../UserMap/user_map.html">客户地图</a></li>
+					<li><a class="devMap" href="../DevMap_admin/devMap_admin.html">设备地图</a></li>
+					<li><a class="search" href="../searchInfo/searchInfo.html">信息搜索</a></li>
+					<li><a id="saleRank" href="../rank/rank.html">销售排名</a></li>
+					<li><a class="userLogs" href="../logmanage/infor.html">客户日志</a></li>
+					<li><a class="modifyInfo" href="../infocompli/changeAdminInfor.html">修改管理员信息</a></li>
+					<li><a class="appDownLoad" href="../QRcode/appDownLoad.html">移动APP下载</a></li>
+					<!--
+                    	作者：1763257419@qq.com
+                    	时间：2018-03-30
+                    	描述：二级客户菜单
+                    -->
+                	<?php
+				   		 }else if($count==2){
+				    ?>
+                    <li><a id="addUser" href="../UserManage/UserManage.html">添加客户</a></li>
+                    <li><a id="addDev" href="../Adddevice/index.html">添加设备</a></li>
+                    <li><a class="devMap" href="../DevMap/dev_map.html">设备地图</a></li>
+                    <li><a class="devList" href="../devlist/index_devlist.html">设备列表</a></li>
+                    <li><a class="modifyInfo" href="../infocompli/infor.html">修改客户信息</a></li>
+                    <li><a class="userLogs" href="../logmanage/infor.html">客户日志</a></li>
+                    <li><a class="appDownLoad" href="../QRcode/appDownLoad.html">移动APP下载</a></li>
+                    <li><a class="QA" href="../QA/news.html">客户问题跟踪</a></li>
+                    <li><a class="feedback" href="../OA/index.html">客户信息反馈</a></li>
+                    <!--
+                    	作者：1763257419@qq.com
+                    	时间：2018-03-30
+                    	描述：三级客户菜单
+                    -->
+                	<?php
+					    }else if($count==3){
+					?>
+					<li><a class="devMap" href="../DevMap/dev_map.html">设备地图</a></li>
+                    <li><a class="devList" href="../devlist/index_devlist.html">设备列表</a></li>
+                    <li><a class="modifyInfo" href="../infocompli/infor.html">修改客户信息</a></li>
+                    <li><a class="userLogs" href="../logmanage/infor.html">客户日志</a></li>
+                    <li><a class="appDownLoad" href="../QRcode/appDownLoad.html">移动APP下载</a></li>
+					<li><a class="QA" href="../QA/news.html">客户问题跟踪</a></li>
+                    <li><a class="devInfoFeedBack" href="../devInfoFeedBack/devInfoFeedBack.html">设备信息反馈</a></li>
+                    <?php
+				    	}
+				    ?>
+                    
+				</ul>
+			</div>
+		</div>
+		<div id="right">
+			<div id="title">
+				<div id="list-icon">
+					<a href="../main.html"><img src="../img/common/list-title.png"/></a>
+				</div>
+				<h1>亿维自动化物联网云平台</h1>
+				<div id="userinfo-box">
+					<div id="head-icon">
+						<a href="../main.html"><img src="../img/common/驯鹿.png"/></a>
+					</div>
+					<div id="user-info">
+						<li class="list" id="user-name">
+							<?php echo $_SESSION['UserName'];?>
+							<ul>
+								<li class="list"><a id="out" href="../exit.php">退出登录</a></li>
+							</ul>
+						</li>
+					</div>
+				</div>
+			</div>
+			<div id="main-box">
+				<div id="userMap-title">
+					<p>客户地图</p>
+				</div>
+				<div class="userMap-body" id="userMap-body">
+					<div id="search-box">
+						<input type="text" name="devNum" id="devNum" value="" placeholder="显示不少于n台设备的客户"/>
+						<input type="button" id="search-btn" onclick="showUserMap()" value=""/>
+					</div>
+					<div id="user_map" class="user_map">
+						<!-- 地图在这个div里面 -->
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+</body>
+</html>
+<script>
+ var teststr=<?php echo $tempstr;?>;
+if(teststr==0)
+{
+window.location.href="../index.html";
+}
+//	导航栏菜单的下拉效果
+	$(function(){
+		$('.list').hover(function(){
+			$(this).children('ul').stop().slideDown('fast');
+		},function(){
+			$(this).children('ul').stop().slideUp('fast');
+		});
+	});
+	
+
+
+
+var map = new BMap.Map("user_map");    // 创建Map实例
+BMapInit();
+var url = "http://image.tupian114.com/20140419/09274112.png";
+var content;
+var myIcon = new BMap.Icon(url, new BMap.Size(40,30));
+var opts = {
+				width : 120,     // 信息窗口宽度
+				height: 250,     // 信息窗口高度
+				title : "客户信息" , // 信息窗口标题
+				enableMessage:true//设置允许信息窗发送短息
+			   };
+var arr_longitude = new Array();
+var arr_latitude = new Array();
+var arr_userName = new Array();
+var arrUserDevNum=new Array();
+var arrUserCompany=new Array();
+var arrUserPhone=new Array();
+var arrUserEmail=new Array();
+var arrUserAddr=new Array();
+var arrUserIndusType=new Array();
+var arrUserRealName=new Array();
+
+var arr_point = new Array();
+var mapSpots = new Array;
+
+
+
+
+function showUserMap(){
+	BMapInit();
+//	alert(document.getElementById('devNum'))
+	// //获取经纬度	
+	  $(function()
+	  {
+	 	$.ajax({
+	 				url: "mysql.search.handle.php",
+	 	            type: "GET",
+	 				dataType:"json",
+	 				async:false,
+	 				success:function(data)
+	 				{	
+						for(var i=0;i<data.Long.split("_").length;i++)
+						{
+							arr_longitude[i]=data.Long.split("_")[i];
+							arr_latitude[i] = data.La.split("_")[i];
+							arr_userName[i] = data.UserName.split("_")[i];
+							arrUserDevNum[i]=data.UserDevNum.split("_")[i];
+							arrUserCompany[i]=data.UserCompany.split("_")[i];
+							arrUserPhone[i]=data.UserPhone.split("_")[i];
+							arrUserEmail[i]=data.UserEmail.split("_")[i];
+							arrUserAddr[i]=data.UserAddr.split("_")[i];
+							arrUserIndusType[i]=data.UserIndusType.split("_")[i];
+							arrUserRealName[i]=data.UserRealName.split("_")[i];
+							arr_point[i] = new BMap.Point(arr_longitude[i],arr_latitude[i]);
+						//	marker = new BMap.Marker(arr_point[i]);
+						//	map.addOverlay(marker);
+						}
+						setZoom(arr_point);
+						addSpots(data.Long.split("_").length);		
+					}
+	 				});
+	 });
+}
+
+///地图自适应性////////////////////////////////////////////////
+function setZoom(points){  
+    if(points.length>0){  
+        var maxLng = points[0].lng;  
+        var minLng = points[0].lng;  
+        var maxLat = points[0].lat;  
+        var minLat = points[0].lat;  
+        var res;  
+        for (var i = points.length - 1; i >= 0; i--) {  
+            res = points[i];  
+            if(res.lng > maxLng) maxLng =res.lng;  
+            if(res.lng < minLng) minLng =res.lng;  
+            if(res.lat > maxLat) maxLat =res.lat;  
+            if(res.lat < minLat) minLat =res.lat;  
+        };  
+        var cenLng =(parseFloat(maxLng)+parseFloat(minLng))/2;  
+        var cenLat = (parseFloat(maxLat)+parseFloat(minLat))/2;  
+        var zoom = getZoom(maxLng, minLng, maxLat, minLat);  
+        map.centerAndZoom(new BMap.Point(cenLng,cenLat), zoom);    
+    }else{  
+        //没有坐标，显示全中国  
+        map.centerAndZoom(new BMap.Point(103.388611,35.563611), 5);    
+    }   
+}  
+
+function getZoom (maxLng, minLng, maxLat, minLat) {  
+    var zoom = ["50","100","200","500","1000","2000","5000","10000","20000","25000","50000","100000","200000","500000","1000000","2000000"]//级别18到3。  
+    var pointA = new BMap.Point(maxLng,maxLat);  // 创建点坐标A  
+    var pointB = new BMap.Point(minLng,minLat);  // 创建点坐标B  
+    var distance = map.getDistance(pointA,pointB).toFixed(1);  //获取两点距离,保留小数点后两位  
+    for (var i = 0,zoomLen = zoom.length; i < zoomLen; i++) {  
+        if(zoom[i] - distance > 0){  
+            return 18-i+3;//之所以会多3，是因为地图范围常常是比例尺距离的10倍以上。所以级别会增加3。  
+        }  
+    };  
+}  
+/////////////////////////////////////////////////////////////////////
+
+
+ function addSpots(arr_length){
+	 for(var j=0;j<arr_length;j++)
+	 {
+	// 	showPoint(j);
+	 	 if((document.getElementById('devNum').value==null)||(document.getElementById('devNum').value==0))
+		{
+			showPoint(j);
+		}else if(arrUserDevNum[j]>=document.getElementById('devNum').value)
+		{
+			showPoint(j);
+		}	
+		marker.setAnimation(BMAP_ANIMATION_BOUNCE); 
+	 }
+	 
+ }
+
+function showPoint(i){
+     if(arrUserIndusType[i]==0)
+    {
+        arrUserIndusType[i]="智能车库";   
+    }else if(arrUserIndusType[i]==1)
+    {
+        arrUserIndusType[i]="温控系统";
+    }else if(arrUserIndusType[i]==2)
+    {
+        arrUserIndusType[i]="农业大棚";
+    }else if(arrUserIndusType[i]==3)
+	{
+        arrUserIndusType[i]="暖通行业";
+    }else if(arrUserIndusType[i]==4)
+    {
+        arrUserIndusType[i]="塑胶机械";   
+    }else if(arrUserIndusType[i]==5)
+    {
+        arrUserIndusType[i]="纺织机械";
+    }else if(arrUserIndusType[i]==6)
+    {
+        arrUserIndusType[i]="矿山机械";
+    }else if(arrUserIndusType[i]==7)
+	{
+        arrUserIndusType[i]="冶金行业";
+    }else if(arrUserIndusType[i]==8)
+    {
+        arrUserIndusType[i]="电力行业";   
+    }else if(arrUserIndusType[i]==9)
+    {
+        arrUserIndusType[i]="石化行业";
+    }else if(arrUserIndusType[i]==10)
+    {
+        arrUserIndusType[i]="建材行业";
+    }else if(arrUserIndusType[i]==11)
+	{
+        arrUserIndusType[i]="汽车制造";
+    }else if(arrUserIndusType[i]==12)
+    {
+        arrUserIndusType[i]="包装机械";   
+    }else if(arrUserIndusType[i]==13)
+    {
+        arrUserIndusType[i]="电子设备";
+    }else if(arrUserIndusType[i]==14)
+    {
+        arrUserIndusType[i]="水处理";
+    }else if(arrUserIndusType[i]==15)
+	{
+        arrUserIndusType[i]="仿真设备";
+    }else if(arrUserIndusType[i]==16)
+    {
+        arrUserIndusType[i]="养殖行业";
+    }else if(arrUserIndusType[i]==17)
+    {
+        arrUserIndusType[i]="冷库行业";
+    }else if(arrUserIndusType[i]==18)
+	{
+        arrUserIndusType[i]="消防设备";
+    }else if(arrUserIndusType[i]==19)
+    {
+        arrUserIndusType[i]="环保行业";   
+    }else if(arrUserIndusType[i]==20)
+    {
+        arrUserIndusType[i]="医药行业";
+    }else if(arrUserIndusType[i]==21)
+    {
+        arrUserIndusType[i]="轨道交通行业";
+    }else if(arrUserIndusType[i]==22)
+	{
+        arrUserIndusType[i]="核电行业";
+    }
+    content = "";
+	content = "<div><span>客户名称：" + arr_userName[i] + "</span></br>"+"<span>拥有设备数量：" + arrUserDevNum[i] + "</span></br>"+"<span>所属公司：" + arrUserCompany[i] + "</span></br>"+"<span>电话：" + arrUserPhone[i] + "</span></br>"+"<span>邮箱：" + arrUserEmail[i] + "</span></br>"+"<span>地址：" + arrUserAddr[i] + "</span></br>"+"<span>行业类型：" + arrUserIndusType[i] + "</span></br>"+"<span>真实姓名：" + arrUserRealName[i] + "</span></br>"+"</div>";
+	marker = new BMap.Marker(arr_point[i]);
+	map.addOverlay(marker);
+	//var lable =  new BMap.Label(content,{offset:new BMap.Size(20,-10)});
+	//marker.setLabel(lable);
+	addClickHandler(content,marker); //添加点击处理程序（点击会出现sn码等信息）
+}
+
+ function BMapInit() {
+ 	map = new BMap.Map("user_map");
+ 	map.centerAndZoom(new BMap.Point(114.317, 30.594), 5);  // 初始化地图,设置中心点坐标和地图级别
+//添加地图类型控件
+	map.addControl(new BMap.MapTypeControl({
+	mapTypes:[
+		BMAP_NORMAL_MAP,
+		BMAP_HYBRID_MAP
+	]}));	  
+	map.setCurrentCity("武汉");          // 设置地图显示的城市 此项是必须设置的
+	map.enableScrollWheelZoom(true);     //开启鼠标滚轮缩放
+ }
+
+function addClickHandler(content,marker){
+	marker.addEventListener("click",function(e){
+		openInfo(content,e)}
+	);
+}
+function translateOnline(code){
+	if (code == 0) {return "离线";}
+	else if(code == 1) {return "在线";}
+	else{return "error";}
+
+}
+
+function openInfo(content,e){
+	var p = e.target;
+	var point = new BMap.Point(p.getPosition().lng, p.getPosition().lat);
+	var infoWindow = new BMap.InfoWindow(content,opts);  // 创建信息窗口对象 
+	map.openInfoWindow(infoWindow,point); //开启信息窗口
+}
+
+
+////////////////////////////关页面			
+var clientX = 0;
+var clientY = 0;
+
+window.onmousedown = function (event) {
+      event = event || window.event;
+      clientX = event.clientX;
+      clientY = event.clientY;
+}
+
+window.onbeforeunload = function () {
+if( clientY < 20){
+	$.ajax({
+	type:"POST",
+	url:"../cleansession.php",
+	data: {"clean":"退出登录"},
+	dataType:"json",
+	async:false,
+	success:function(data)
+	{						
+	}
+	});	
+}
+};
+
+</script>

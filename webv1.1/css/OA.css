@@ -1,0 +1,15 @@
+#feedback-body{
+	width: 100%;
+	height: 700px;
+	margin-top: 20px;
+	background-color: #fff;
+	border-radius: 5px;
+}
+
+.grid_table{
+	width: 950px;
+	height:600px; 
+	margin-left: 50px;
+	margin-top:20px;
+	padding-top: 20px;
+}

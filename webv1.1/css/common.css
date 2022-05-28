@@ -1,0 +1,293 @@
+body,div,input,p,a,img,ul,li,ol,h1,h2,h3{
+	margin: 0;
+	padding: 0;
+}
+
+body{
+	background-color: #F5F5F5;
+}
+
+li{
+	list-style: none;/*清除所有li标签的默认样式*/
+}
+
+a{
+	text-decoration: none;/*清除a标签的下划线*/
+	display: inline-block;  /*设置a标签为行内块级元素*/
+}
+
+.public-width{
+	min-width: 1400px;/*设置元素的最小宽度，可以比该宽度大，但不能比该宽度小*/
+	width: 100%;
+}
+
+.center{
+	width: 1400px;
+	margin: 0 auto;
+}
+
+#container{
+	height: 800px;
+	background-color: #F6F7F9;
+}
+#left{
+	width: 250px;
+	height: 100%;
+	float:left;
+	background-color:#363640 ;
+	position: fixed;
+	z-index: 999;
+}
+
+#logo{
+	width: 150px;
+	height: 50px;
+	margin-left:30px;
+	margin-right: auto;
+}
+#logo img{
+	height: 50px;
+	width: 100%;
+}
+
+#right{
+	width: 1150px;
+	height: 100%;
+	float: left;
+	margin-left: 250px;
+}
+#title{
+	width: 1150px;
+	height: 50px;
+	background-color: #FDFDFF;
+	border-bottom: 1px solid #E3E3E3;	
+	position: fixed;
+	z-index: 999;
+	
+}
+#main-box{
+	width: 100%;
+	height: 100%;
+	position: relative;
+	top: 50px;
+}
+
+#list-icon{
+	width: 70px;
+	height: 50px;
+	float: left;
+}
+
+#list-icon img{
+	width: 30px;
+	height: auto;
+	margin-left: 20px;
+	margin-top: 10px;
+}
+
+#title h1{
+	display: inline-block;
+	height: 50px;
+	line-height: 50px;
+	width: 250px;
+	text-align: center;
+	/*background-color: dodgerblue;*/
+	color: #EC6F1C;
+	float: left;
+	font-family: "黑体";
+	font-size:100% ;
+	border-left: 1px solid #E3E3E3;
+}
+#userinfo-box{
+	width: 180px;
+	height: 50px;
+	float: right;
+	position: relative;
+	z-index: 1000;
+}
+
+
+#menu-box{
+	width: 250px;
+	height: auto;
+}
+
+#menu li{
+	display: inline-block;
+	height: 50px;
+	line-height: 50px;
+	width: 245px;
+	
+}
+#menu li:hover{
+	background-color: #2C2B31;
+	border-left: 5px solid #EA6100;
+}
+
+
+#menu a{
+	display: inline-block;
+	height: 50px;
+	width: 215px;
+	line-height: 50px;
+	padding-left: 30px;
+	color: white;
+	margin-left: 30px;
+}
+
+#menu a:hover{
+	color: #EA6100;
+}
+
+#userMap,.devMap{
+	background: url(../img/common/white/添加地图-w.png) no-repeat scroll left;
+}
+
+#userMap:hover,.devMap:hover{
+	background: url(../img/common/orange/添加地图-or.png) no-repeat scroll left;
+}
+
+.modifyInfo{
+	background: url(../img/common/white/用户信息-w.png) no-repeat scroll left;
+}
+
+.modifyInfo:hover{
+	background: url(../img/common/orange/用户信息-or.png) no-repeat scroll left;
+}
+.appDownLoad{
+	background: url(../img/common/white/APP-white.png) no-repeat scroll left;
+}
+.appDownLoad:hover{
+	background: url(../img/common/orange/APP-or.png) no-repeat scroll left;
+}
+
+.userLogs{
+	background: url(../img/common/white/日志-w.png) no-repeat scroll left;
+}
+
+.userLogs:hover{
+	background: url(../img/common/orange/APP-or.png) no-repeat scroll left;
+}
+
+.QA{
+	background: url(../img/common/white/QA-w.png) no-repeat scroll left;
+}
+
+.QA:hover{
+	background: url(../img/common/orange/QA-or.png) no-repeat scroll left;
+}
+
+.devList{
+	background: url(../img/common/white/设备列表-w.png) no-repeat scroll left;
+}
+
+.devList:hover{
+	background: url(../img/common/orange/设备列表-or.png) no-repeat scroll left;
+}
+
+#addUser{
+	background: url(../img/common/white/用户-w.png) no-repeat scroll left;
+}
+
+#addUser:hover{
+	background: url(../img/common/orange/用户-or.png) no-repeat scroll left;
+}
+#addDev{
+	background: url(../img/common/white/添加设备-w.png) no-repeat scroll left;
+}
+
+#addDev:hover{
+	background: url(../img/common/orange/添加设备-or.png) no-repeat scroll left;
+}
+
+.feedback,.devInfoFeedBack{
+	background: url(../img/common/white/反馈-w.png) no-repeat scroll left;
+}
+
+.feedback:hover,.devInfoFeedBack:hover{
+	background: url(../img/common/orange/反馈-or.png) no-repeat scroll left;
+}
+#saleRank{
+	background:url(../img/common/white/排名靠前-w.png) no-repeat scroll left;
+	background-size: 22px auto;
+}
+
+#saleRank:hover{
+	background:url(../img/common/orange/排名靠前-or.png) no-repeat scroll left;
+	background-size: 22px auto;
+}
+.search{
+	background:url(../img/common/white/搜索-w.png) no-repeat scroll left;
+	background-size: 22px auto;	
+}
+.search:hover{
+	background:url(../img/common/orange/搜索-or.png) no-repeat scroll left;
+	background-size: 22px auto;	
+}
+
+
+
+#head-icon{
+	width: 50px;
+	height: 50px;
+	background-color: white;
+	float: left;
+}
+#head-icon img{
+	width:50px;
+	height: 50px;
+}
+
+
+#user-info{
+	width: 100px;
+	height: 50px;
+	float: left;
+}
+#user-info li{
+	display: inline-block;
+	width: 100px;
+	height: 50px;
+	line-height: 50px;
+	text-align: center;
+	background-color: #FDFDFF;
+}
+
+#user-name{
+	background: url("http://ourjs.github.io/static/2015/arrow.png") no-repeat scroll 75px center transparent;
+}
+
+.list ul{
+	display: none;
+}
+
+.list a{
+	color: black;
+}
+.list a:hover,.list:hover{
+	color: #EA6100;
+}
+
+#main-box{
+	width:1050px ;
+	height: 700px;
+	margin: 0 auto;
+	margin-top: 25px;
+	/*background-color: #FDFDFF;*/
+}
+
+.title{
+	width: 100%;
+	height: 50px;
+	border-bottom: 1px solid #D1D3D3;
+}
+
+.title p{
+	display: inline-block;
+	height: 50px;
+	line-height: 50px;
+	width: 100%;
+	color: #808082;
+	font-size: 110%;
+}
+

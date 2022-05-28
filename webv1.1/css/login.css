@@ -1,0 +1,179 @@
+body div h1 h2 p a img li{
+	margin: 0;
+	padding: 0;
+}
+
+body{
+	background-color: #fff;
+	margin: 0;
+}
+
+li h1{
+	list-style: none;/*清除所有li标签的默认样式*/
+}
+
+a{
+	text-decoration: none;/*清除a标签的下划线*/
+	display: inline-block;  /*设置a标签为行内块级元素*/
+}
+
+body{
+	background-color: #fff;
+}
+
+.public-width{
+	min-width: 1400px;/*设置元素的最小宽度，可以比该宽度大，但不能比该宽度小*/
+	width: 100%;
+}
+
+.center{
+	width: 1400px;
+	margin: 0 auto;
+}
+
+#main-box{
+	height: 100%;
+	background-color: #FFFFFF;
+	width: 100%;
+}
+
+#left-box{
+	height: 100%;
+	/*width: 600px;*/
+	width: 40%;
+	float: left;
+	background-color: #363640;
+
+}
+
+#logo{
+	width: 300px;
+	height: 100px;
+	margin-left: 150px;
+	margin-top: 190px;
+}
+
+#logo img{
+	width: 300px;
+	height: 100px;
+}
+#backgnd-img{
+	position: relative;
+	bottom: 0;
+	/*top: 20px;*/
+	width: 400px;
+	height: 400px;
+	margin-bottom: 20px;
+	z-index: 3;
+}
+#backgnd-img img{
+	width: 400px;
+	height: 400px;
+}
+#right-box{
+	/*width: 100%;*/
+	width: 60%;
+	height: 100%;
+	background-color: #F5F5F5;
+	float: left;
+}
+
+#login-box{
+	width: 600px;
+	/*width: 60%;*/
+	height: 500px;
+	float: left;
+	margin-left: 20%;
+	margin-top: 150px;
+	background-color: white;
+}
+
+#login-title{
+	margin-top: 50px;
+	display: inline-block;
+	width: 600px;
+	height: 50px;
+	text-align: center;
+	line-height: 50px;
+	color: #E0560B;
+	font-size: 150%;
+}
+
+#login-input{
+	width: 600px;
+	height: 430px;
+	margin-top: 20px;
+}
+
+.input-info{
+	width: 100%;
+	height: 50px;
+	margin-top: 20px;
+}
+
+
+#iPASSWORD,#iUSERNAME{
+	width: 60%;
+	height: 50px;
+	line-height: 50px;
+	margin-left: 20%;
+	border: none;
+	font-size: 130%;
+	border-bottom: 1px solid #767676;	
+}
+
+#iPASSWORD:focus,#iUSERNAME:focus{
+	border: none;
+	border-bottom: 1px solid #E0560B;	
+}
+#select{
+	width: 60%;
+	height: 50px;
+	margin-left: 20%;
+}
+
+#p-1{
+	display: inline-block;
+	float: left;
+}
+#p-2{
+	display: inline-block;
+	float: right;
+}
+
+#select a{
+	color: #000;
+}
+
+#login{
+	width: 100%;
+	height: 50px;
+	margin-top: 30px;
+}
+
+#login-btn{
+	display: inline-block;
+	height: 50px;
+	line-height: 50px;
+	width: 60%;
+	margin-left: 20%;
+	border-radius: 5px;
+	border: none;
+	color: #fff;
+	background: #E0560B;
+	text-align: center;
+	font-size: 150%;
+}
+#reg{
+	width: 100%;
+	height: 50px;
+	line-height: 50px;
+}
+
+#goto-reg{
+	text-align: center;
+	height: 50px;
+	line-height: 50px;
+}
+
+*/

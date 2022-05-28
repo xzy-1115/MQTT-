@@ -1,0 +1,71 @@
+﻿<!DOCTYPE html>
+<html>
+<head> 
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<!--<meta http-equiv="Content-Type" content="text/html; charset=gb2312">-->
+</head>
+<?php
+session_start();
+$user2namestr=$_SESSION['UserName'];//$_GET['user2str'];
+?>
+<body>
+<div class="fanbox">
+    <h3>新增客户</h3>
+    <form id="add_form" action="./sendMail/sendmail.php?action=add" method="post">
+        <table width="100%" cellpadding="0" cellspacing="0" class="post_table">
+		  <tr>
+                <td width="30%" align="right">当前客户：</td>
+                <td><input type="text" class="input2" name="user2name" value=<?php echo $user2namestr?> maxlength="30" /></td>
+            </tr>
+            <tr>
+                <td width="30%" align="right">客户名：</td>
+                <td><input type="text" class="input2" name="user3name" maxlength="30" /></td>
+            </tr>
+		
+            <tr>
+                <td align="right">邮箱: </td>
+                <td><input type="text" class="input2" name="email" maxlength="50" /></td>
+            </tr>
+		
+			 <tr>
+                <td align="right">电话: </td>
+                <td><input type="text" class="input2" name="phone" maxlength="15" /></td>
+            </tr>
+			
+            <tr>
+                <td height="60">&nbsp;</td>
+                <td><input type="submit" class="btn" value="提交"/> <input type="button" class="btn" value="取消" onclick="$.fancybox.close();" /></td>
+            </tr>
+        </table>
+    </form>
+</div>
+</body>
+</html>
+<script type="text/javascript" src="js/jquery.form.js"></script>
+<script type="text/javascript">
+                    $(function() {
+                        $('#add_form').ajaxForm({
+                            beforeSubmit: validate,
+                            success: function(msg) {
+                                if (msg == 1) {
+                                    $.fancybox.close();
+                                    $().message("成功添加");
+                                    jQuery("#list").jqGrid( 'setGridParam', { url : 'do.php?action=list', page : 1 }).trigger("reloadGrid");
+                                } else {
+                                    alert(msg);
+                                }
+                            }
+                        });
+                    });
+                    function validate(formData, jqForm, options) {
+                        for (var i = 0; i < formData.length; i++) {
+                            if (!formData[i].value) {
+                                $().message("请输入完整相关信息");
+                                return false;
+                            }
+                        }
+                        $().message("正在提交...");
+                    }
+					
+
+</script>

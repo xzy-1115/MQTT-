@@ -1,0 +1,323 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1,minimum-scale=1,maximum-scale=1,user-scalable=no" />
+    <title></title>  
+    <link href="css/mui.min.css" rel="stylesheet"/>
+    <style type="text/css">
+    	.hide {
+    		display: none;
+    	}
+    	.attrName {
+    		position: relative;
+    		top: 10px;
+    	}
+    	.btn-group {
+    		display: inline-block;
+    		position: relative;
+    	}
+    	button {
+    		margin-left: 35px;
+    	}
+    	.input-btn {
+    		bottom: 10px;
+    	}
+    	input {
+    		display: inline-block;
+    		width: 100px !important;
+    		right: 10px;
+    		top: 5px;
+    		position: absolute;
+    	}
+    	.inputData {
+    		float: right;
+    	}
+    </style>
+</head>
+
+
+<body>
+	<header class="mui-bar mui-bar-nav">
+		<a class="mui-action-back mui-icon mui-icon-left-nav mui-pull-left public-color"></a>
+		<h1 class="mui-title">设备数据读写</h1>
+	</header>
+	<div id="refreshContainer" class="mui-content mui-scroll-wrapper">
+	  <div class="mui-scroll">
+	    <!--数据列表-->
+	    <ul class="mui-table-view mui-table-view-chevron" id="RWList">
+	    </ul>
+	  </div>
+	</div>
+
+<script src="js/mui.min.js"></script>
+<script src="js/mqttws31.min.js"></script>
+<script src="js/jquery-2.0.3.min.js"></script>
+<script type="text/javascript" charset="utf-8">
+		var client;                                         //MQTT连接客户
+		var protocolVersionDb;                              //数据库协议版本
+		var protocolVersionDev;                             //设备协议版本
+		var RWData;                                         //报警数据
+		var sendTime = 0;
+		var readTime = 0;
+		var writeTime = 0;
+		var domNow;
+		var writeFlag = false;
+		Date.prototype.Format = function (fmt) { 
+		    var o = {
+		        "M+": this.getMonth() + 1, //月份 
+		        "d+": this.getDate(), //日 
+		        "h+": this.getHours(), //小时 
+		        "m+": this.getMinutes(), //分 
+		        "s+": this.getSeconds(), //秒 
+		        "q+": Math.floor((this.getMonth() + 3) / 3), //季度 
+		        "S": this.getMilliseconds() //毫秒 
+		    };
+		    if (/(y+)/.test(fmt)) fmt = fmt.replace(RegExp.$1, (this.getFullYear() + "").substr(4 - RegExp.$1.length));
+		    for (var k in o)
+		    if (new RegExp("(" + k + ")").test(fmt)) fmt = fmt.replace(RegExp.$1, (RegExp.$1.length == 1) ? (o[k]) : (("00" + o[k]).substr(("" + o[k]).length)));
+		    return fmt;
+		}
+		var url = "http://120.78.176.175:8081";
+		
+      	mui.init();
+      	var userName = localStorage.getItem("userName");
+      	var devSNCode = localStorage.getItem("snCode");
+      	getprotocolVersionDb(devSNCode);
+      	
+      	//拿到数据库里的协议版本
+		function getprotocolVersionDb(devSNCode){
+		    $.ajax({
+		        url: url + "/app/getProtocolVersion",
+		        cache: false,
+		        dataType:'json',
+		        data : {
+		            snCode: devSNCode
+		        },
+		        type : 'POST',
+		        beforeSend: function () {
+		
+		        },
+		        success: function(result){
+		            if(result.code == 0){
+                        mui.toast(result.msg);
+		                protocolVersionDb = result.data;
+		                getprotocolFlag = true;
+		                initMqtt();
+		                console.log(protocolVersionDb);
+		            }
+		            else {
+                        mui.toast(result.msg);
+		                closeData();
+		            }
+		        },
+		        complete: function () {
+		
+		        },
+		        error: function (data) {
+		            console.log(data);
+		            console.info("error: " + data.responseText);
+		            closeData();
+		        }
+		    });
+		}
+		
+		//新建MQTT连接，并发去第一次message
+		function initMqtt() {
+		    // Create a client instance
+		    client = new Paho.MQTT.Client('47.93.11.243', 61623, "yiwei");
+		
+		    // set callback handlers
+		    client.onConnectionLost = onConnectionLost;
+		    client.onMessageArrived = onMessageArrived;
+		
+		    // connect the client
+		    client.connect({ userName:'admin', password:'password', onSuccess: onConnect });
+		}
+
+		function onConnect() {
+		    // Once a connection has been made, make a subscription and send a message.
+		    console.log("onConnect");
+		    // client.subscribe("/China/HuBei/#");
+		    // c_sub_topic = "/China/HuBei/"+devSNCode+"/#";
+		    c_sub_topic = "/"+devSNCode+"/#";
+		    client.subscribe(c_sub_topic);
+		    message_payloadString = "1";
+		    message = new Paho.MQTT.Message(message_payloadString);
+		    // devSNCodeTest = "HMITest001";       //测试用
+		    // message_destinationName = "/China/HuBei/" + devSNCode + "/DevRecv/cfg/req"
+		    message_destinationName = "/" + devSNCode + "/DevRecv/cfg/req"
+		    message.destinationName = message_destinationName;
+		    client.send(message);
+		}
+		
+		// called when the client loses its connection
+		function onConnectionLost(responseObject) {
+		    if (responseObject.errorCode !== 0) {
+		        console.log("onConnectionLost:" + responseObject.errorMessage);
+		    }
+		}
+		
+		// called when a message arrives
+		function onMessageArrived(message) {
+		    console.log(message.destinationName);
+		    console.log(message.payloadString);
+		    switch(message.destinationName){
+		        case devSNCode + "/DevSend/cfg/ack":
+		            if(sendTime == 0){
+		                analProtocol(message.payloadString);
+		                sendTime++;
+		            }
+		            break;
+		        case devSNCode + "/DevSend/RdOnce/ack":
+		            if(readTime == 0){
+		                var answer = message.payloadString.split("_")[2];
+		                if(typeNow === "2"){
+		                	domNow.val(answer);
+		                	mui.toast("读取成功");
+		                } 
+		                else if(typeNow === "3"){
+		                	domNow.val(answer);
+		                	mui.toast("读取成功");
+		                } 
+		                else if (typeNow === "1") {
+		                	if(answer == "1"){
+		                		if(!domNow.hasClass("mui-active")){
+		                			domNow.addClass("mui-active");
+		                			mui.toast("读取成功");
+		                		}
+		                	}
+		                    else {
+		                    	if(domNow.hasClass("mui-active")){
+		                			domNow.removeClass("mui-active");
+		                			mui.toast("读取成功");
+		                		}
+		                    }
+		                }
+		                readTime++;
+		            }
+		            break;
+		        case devSNCode + "/DevSend/WwOnce/ack":
+		            if(writeTime == 0){
+		                var answer = message.payloadString.split("_")[1];
+		                if(answer === "1") mui.toast("写入成功");
+		                else mui.toast("写入失败");
+		                writeTime++;
+		            }
+		            break;
+		    }
+		}
+		
+		//分析设备发过来的数据
+		function analProtocol(payload){
+		    let payloadData = new Array();
+		    payloadData = payload.split("_");
+		    protocolVersionDev = payloadData[0];
+		    payloadData.shift();
+		    payloadData.pop();
+		    devData = payloadData;
+		    if (protocolVersionDev == protocolVersionDb){
+		    	protocolVersionFlag = true;
+		    	getRWListData();
+		    } 
+		    else{
+		        protocolVersionFlag = false;
+		        return mui.toast("协议不同步，请在web页面同步协议");
+		    }
+		}
+		
+		function getRWListData() {
+		    $.ajax({
+		        type : "POST",
+		        url : url + "/app/readWrite",
+		        data:{
+		            "protocolVersion" : protocolVersionDb
+		        },
+		        dataType : "json",
+		        success : function(result) {
+		            if (result.code == "0") {
+		                // alert(result.msg);
+		                RWData = result.data;
+		                displayData();
+		            } else {
+		                // alert(result.msg);
+		            }
+		        }
+		    });
+		}
+
+		function displayData() {
+		    var str = "";
+		    for (var i = 0; i < RWData.length; i++) {
+		        if (RWData[i].dataType === "1") {
+		            str += "<li class='mui-table-view-cell main-hook' id='type" + RWData[i].dataName + "=" + RWData[i].dataType + "'><span class='attrName'>" + RWData[i].dataName + "</span>" + 
+		            "<div class='btn-group'><button type='button' class='mui-btn mui-btn-warning readData " + isHide(RWData[i].isRead) + "' id='RDoffset=" + 
+		            RWData[i].offsetNumber + "'>读取</button>" + 
+		            "<button type='button' class='mui-btn mui-btn-royal writeData " + isHide(RWData[i].isWrite) + "' id='WToffset=" + RWData[i].offsetNumber + "'>写入</button></div>"	+ 
+		            "<div class='mui-switch inputData'><div class='mui-switch-handle'></div></div>" +
+		            "</li>";
+		        }
+		        else {
+		            str += "<li class='mui-table-view-cell main-hook' id='type" + RWData[i].dataName + "=" + RWData[i].dataType + "'><span class='attrName'>" + RWData[i].dataName + 
+		            "<div class='btn-group input-btn'><button type='button' class='mui-btn mui-btn-warning readData " + isHide(RWData[i].isRead) + "' id='RDoffset=" + 
+		            RWData[i].offsetNumber + "'>读取</button>" +
+		            "<button type='button' class='mui-btn mui-btn-royal writeData " + isHide(RWData[i].isWrite) + "' id='WToffset=" + RWData[i].offsetNumber + "'>写入</button></div>" + 
+		            "</span><input type='text' class='mui-input-clear inputData'>" + 
+		            "</li>";
+		        }
+		    }
+		    $("#RWList").empty().append(str);
+		
+		    $('.readData').click(function(){
+		    	typeNow = $(this).parents(".main-hook").attr("id").split("=")[1];
+		        readTime = 0;
+		        var offset = this.id.split("=")[1];
+		        message_payloadString = protocolVersionDev + "_" + offset;
+		        var mes = new Paho.MQTT.Message(message_payloadString);
+		        mes.destinationName = "/" + devSNCode + "/DevRecv/RdOnce/req";
+		        domNow = $(this).parents(".main-hook").find(".inputData");
+		        client.send(mes);
+		    });
+		
+		    $('.writeData').click(function(){
+		    	var input;
+		    	writeFlag = false;
+		    	typeNow = $(this).parents(".main-hook").attr("id").split("=")[1];
+		        writeTime = 0;
+		        var input;
+		        var offset = this.id.split("=")[1];
+		        if (typeNow === "2"){
+		        	input = $(this).parents(".main-hook").find(".inputData").val();
+		        	var reg = /^((-\d+(\.\d+)?)|(0+(\.0+)?))$ /;
+		        	writeFlag = reg.test(input);
+		        } 
+		        else if (typeNow === "3") {
+		        	input = $(this).parents(".main-hook").find(".inputData").val();
+		        	var reg =  /^[+-]?\d*\.\d{1,3}$/;
+		        	writeFlag = reg.test(input);
+		        } 
+		        else if(typeNow === "1") {
+		            var state = $(this).parents(".main-hook").find(".inputData").hasClass("mui-active");
+		            writeFlag = true;
+		            if(state) input = 1;
+		            else input = 0;
+		        }
+		        message_payloadString = protocolVersionDev + "_" + offset + "_" + input;
+		        var mes = new Paho.MQTT.Message(message_payloadString);
+		        mes.destinationName = "/" + devSNCode + "/DevRecv/WrOnce/req";
+		        if(writeFlag) client.send(mes);
+		        else {
+		        	if (typeNow === "2") mui.toast("请输入整数!")
+		        	else if (typeNow === "3") mui.toast("请输入小数!")
+		        } 
+		    });
+		    mui(".mui-switch").switch();
+		}
+		
+		function isHide(offset) {
+		    if (offset === "1") return "";
+		    else return "hide";
+		}
+</script>
+</body>
+</html>

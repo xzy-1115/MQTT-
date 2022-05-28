@@ -1,0 +1,202 @@
+<!DOCTYPE html>
+<html>
+	<head>
+    	<title>客户问题跟踪</title>
+    	<meta charset="UTF-8">
+    	<link rel="stylesheet" type="text/css" href="../css/common.css">
+    	<link rel="stylesheet" type="text/css" href="../css/QA.css">
+     	<link rel="stylesheet" type="text/css" href="css/bootstrap.min.css" />
+	    <link rel="stylesheet" type="text/css" href="css/bootstrap-responsive.min.css" />
+	    <link rel="stylesheet" type="text/css" href="css/style.css" />
+	    <script type="text/javascript" src="js/jquery.min.js"></script>
+		<script type="text/javascript" src="js/kindeditor/kindeditor-min.js"></script>
+		<script type="text/javascript" src="js/kindeditor/lang/zh_CN.js"></script>
+	</head>
+	 <?php 
+	session_start(); 
+	if($_SESSION['UserName'])
+	$tempstr=1;
+	//$tempstr=0;
+	else $tempstr=0;
+?>
+	<body>
+	    <div class="center public-width" id="container">
+			<div id="left">
+				<div id="logo" style="width: 150px;height: 50px;margin-left: 30px;margin-right: auto;">
+					<img src="../img/common/logo_黑底.png"/>
+				</div>
+				<div id="menu-box">
+					<ul id="QAmenu">
+						<!--管理员菜单-->
+						<?php
+							session_start();
+							include_once ("../connect.php");
+							$result = mysql_query("SELECT * FROM use_login WHERE UserName ='".$_SESSION['UserName']."'  ");
+							$row = mysql_fetch_array($result, MYSQL_ASSOC);
+							$count = $row['Role'];
+							if($count==1){
+						?>
+						<li><a id="userMap" href="../UserMap/user_map.html">客户地图</a></li>
+						<li><a class="devMap" href="../DevMap_admin/devMap_admin.html">设备地图</a></li>
+						<li><a class="search" href="../searchInfo/searchInfo.html">信息搜索</a></li>
+						<li><a id="saleRank" href="../rank/rank.html">销售排名</a></li>
+						<li><a class="userLogs" href="../logmanage/infor.html">客户日志</a></li>
+						<li><a class="modifyInfo" href="../infocompli/changeAdminInfor.html">修改管理员信息</a></li>
+						<li><a class="appDownLoad" href="../QRcode/appDownLoad.html">移动APP下载</a></li>
+						<!--
+	                    	作者：1763257419@qq.com
+	                    	时间：2018-03-30
+	                    	描述：二级客户菜单
+	                    -->
+	                	<?php
+					   		 }else if($count==2){
+					    ?>
+	                    <li><a id="addUser" href="../UserManage/UserManage.html">添加客户</a></li>
+	                    <li><a id="addDev" href="../Adddevice/index.html">添加设备</a></li>
+	                    <li><a class="devMap" href="../DevMap/dev_map.html">设备地图</a></li>
+	                    <li><a class="devList" href="../devlist/index_devlist.html">设备列表</a></li>
+	                    <li><a class="modifyInfo" href="../infocompli/infor.html">修改客户信息</a></li>
+	                    <li><a class="userLogs" href="../logmanage/infor.html">客户日志</a></li>
+	                    <li><a class="appDownLoad" href="../QRcode/appDownLoad.html">移动APP下载</a></li>
+	                    <li><a class="QA" href="../QA/news.html">客户问题跟踪</a></li>
+	                    <li><a class="feedback" href="../OA/index.html">客户信息反馈</a></li>
+	                    <!--
+	                    	作者：1763257419@qq.com
+	                    	时间：2018-03-30
+	                    	描述：三级客户菜单
+	                    -->
+	                	<?php
+						    }else if($count==3){
+						?>
+						<li><a class="devMap" href="../DevMap/dev_map.html">设备地图</a></li>
+	                    <li><a class="devList" href="../devlist/index_devlist.html">设备列表</a></li>
+	                    <li><a class="modifyInfo" href="../infocompli/infor.html">修改客户信息</a></li>
+	                    <li><a class="userLogs" href="../logmanage/infor.html">客户日志</a></li>
+	                    <li><a class="appDownLoad" href="../QRcode/appDownLoad.html">移动APP下载</a></li>
+						<li><a class="QA" href="../QA/news.html">客户问题跟踪</a></li>
+	                    <li><a class="devInfoFeedBack" href="../devInfoFeedBack/devInfoFeedBack.html">设备信息反馈</a></li>
+	                    <?php
+					    	}
+					    ?>
+					</ul>
+				</div>
+			</div>
+			<div id="right">
+				<div id="title">
+					<div id="list-icon">
+						<a href="../main.html"><img src="../img/common/list-title.png"/></a>
+					</div>
+					<h1 id="title-h1" style="font-size: 120%;">亿维自动化物联网云平台</h1>
+					<div id="userinfo-box">
+						<div id="head-icon">
+							<a href="../main.html"><img src="../img/common/驯鹿.png"/></a>
+						</div>
+						<div id="user-info">
+							<li class="list" id="user-name">
+								<?php echo $_SESSION['UserName'];?>
+								<ul>
+									<li class="list"><a id="out" href="../exit.php">退出登录</a></li>
+								</ul>
+							</li>
+						</div>
+					</div>
+				</div>
+				<div id="main-box">
+					<div id="QAadd-title" class="title">
+						<p>添加问题</p>
+					</div>
+					<div id="QAadd-body">
+						  <form action="news_add.php" method="post" class="definewidth m20">
+							<table class="table table-bordered table-hover definewidth m10">
+								<tr>
+									<td width="10px" height="40px" line-height="40px" position="relative" class="tableleft">标题</td>
+									<td width="900px">
+										<input type="text" id="question" name="title" style="width:900px;"/>
+									</td>
+								</tr>
+								
+								<tr>
+									<td width="10%" class="tableleft">内容</td>
+									<td colspan="3">
+										<textarea name="content" id="content" rows="15" style="width:100%;"></textarea>
+									</td>
+								</tr>
+								<tr>
+									<td class="tableleft"></td>
+									<td colspan="3">
+										<input type="submit" class="btn btn-primary" value="保存"/>
+										&nbsp;&nbsp;<input type="button" class="btn btn-success" name="backid" id="backid" value="返回"/>
+										&nbsp;&nbsp;<font color="red"></font>
+									</td>
+								</tr>
+							</table>
+						</form>
+					</div>
+				</div>
+			</div>
+		</div>		
+	</body>
+</html>
+<script type="text/javascript">
+ var teststr=<?php echo $tempstr;?>;
+if(teststr==0)
+{
+window.location.href="../index.html";
+}
+$(function(){
+	$('.list').hover(function(){
+		$(this).children('ul').stop().slideDown('fast');
+	},function(){
+		$(this).children('ul').stop().slideUp('fast');
+	});
+});
+
+	
+		var editor;
+		
+		KindEditor.ready(function(K) {
+			editor = K.create('textarea[name="content"]', {
+				resizeType : 1,
+				allowPreviewEmoticons : false,
+				allowImageUpload : false,
+				items : [ 'fontname', 'fontsize', '|', 'forecolor', 'hilitecolor',
+						'bold', 'italic', 'underline', 'removeformat', '|',
+						'justifyleft', 'justifycenter', 'justifyright',
+						'insertorderedlist', 'insertunorderedlist', '|',
+						'link' ],
+				afterBlur: function(){
+					this.sync();
+				}				
+			});
+		});
+				
+		//返回按钮事件
+		$('#backid').click(function(){	
+                location = "news.html";
+		});
+		
+////////////////////////////关页面			
+var clientX = 0;
+var clientY = 0;
+
+window.onmousedown = function (event) {
+      event = event || window.event;
+      clientX = event.clientX;
+      clientY = event.clientY;
+}
+
+window.onbeforeunload = function () {
+if( clientY < 20){
+	$.ajax({
+	type:"POST",
+	url:"../cleansession.php",
+	data: {"clean":"退出登录"},
+	dataType:"json",
+	async:false,
+	success:function(data)
+	{						
+	}
+	});	
+}
+};
+</script>
